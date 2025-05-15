@@ -1,0 +1,5 @@
+body{font-family:sans-serif;max-width:400px;margin:3rem auto;text-align:center}
+input{font-size:1.2rem;padding:.4rem;width:100%;box-sizing:border-box}
+button{margin-top:1rem;padding:.6rem 1.2rem;font-size:1rem}
+.err{color:#e74c3c;margin-top:.5rem}
+.ok {color:#2ecc71;margin-top:.5rem}
