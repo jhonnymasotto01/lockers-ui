@@ -1,5 +1,5 @@
 /* ---------- config ---------------------------------------------------- */
-const api   = "https://lockers-backend.<SUB>.workers.dev";
+const api   = "https://lockers-api.cqc2qfkwcw.workers.dev/";
 const url   = new URL(location.href);
 const boxId = +url.searchParams.get("box") || 0;
 document.getElementById("title").textContent = `Locker ${boxId}`;
