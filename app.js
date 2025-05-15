@@ -1,4 +1,4 @@
-// ⚙️  sostituisci con il TUO sottodominio *.workers.dev
+// URL del tuo Worker – sostituisci se diverso
 const API = "https://lockers-api.cqc2qfkwcw.workers.dev";
 
 const url  = new URL(location.href);
@@ -11,59 +11,70 @@ const elMsg = id("msg"),
       bReg  = id("btnReg"),
       bOpen = id("btnOpen");
 
-if (!box)  return show("danger","Parametro ?box mancante");
-init();
+if (!box) {
+  show("danger","Parametro ?box mancante");
+} else {
+  init();
+}
 
 bReg.onclick  = onRegister;
 bOpen.onclick = onOpen;
 
 /* ---------- init ----------------------------------------------------- */
 async function init(){
-  const r = await fetch(`${API}/state?box=${box}`).then(r=>r.json())
-                .catch(()=>({ok:false,msg:"API non raggiungibile"}));
+  const r = await fetch(`${API}/state?box=${box}`)
+             .then(r=>r.json())
+             .catch(()=>({ok:false,msg:"API non raggiungibile"}));
 
-  if(!r.ok)          return show("danger",r.msg);
-  if(!r.booked){     return show("warning","Box libero, niente prenotazione."); }
+  if(!r.ok){       show("danger",r.msg); return; }
+  if(!r.booked){   show("warning","Box libero, nessuna prenotazione."); return; }
 
-  // c’è una prenotazione: device registrato?
+  /* c’è una prenotazione → verifichiamo se il device è già registrato */
   const me  = navigator.userAgent;
-  const chk = await fetch(`${API}/open?box=${box}&device=${encodeURIComponent(me)}`);
-  if(chk.status===403){          // non registrato
-    grp.hidden=false;
+  const chk = await fetch(`${API}/open?box=${box}&device=${encodeURIComponent(me)}&dry=1`);
+
+  if(chk.status === 403){        // NON registrato
+    grp.hidden = false;
     show("info","Inserisci il PIN della prenotazione");
-  }else{                         // già registrato
+  }else{                         // Già registrato
     show("success","Dispositivo riconosciuto");
-    bOpen.hidden=false;
+    bOpen.hidden = false;
   }
 }
 
 /* ---------- registra dispositivo ------------------------------------ */
 async function onRegister(){
   const pincode = elPin.value.trim();
-  if(!pincode) return alert("Inserisci il PIN");
+  if(!pincode){ alert("Inserisci il PIN"); return; }
 
   const body = { box:+box, pincode, device:navigator.userAgent };
-  const r = await fetch(`${API}/register`,post(body)).then(r=>r.json());
-  if(!r.ok)  return show("danger",r.msg);
+  const r    = await fetch(`${API}/register`,post(body)).then(r=>r.json());
+
+  if(!r.ok){ show("danger",r.msg); return; }
 
   show("success",r.msg);
-  grp.hidden=true; bOpen.hidden=false;
+  grp.hidden = true;
+  bOpen.hidden = false;
 }
 
 /* ---------- apri ----------------------------------------------------- */
 async function onOpen(){
   const me = navigator.userAgent;
   const r  = await fetch(`${API}/open?box=${box}&device=${encodeURIComponent(me)}`)
-             .then(r=>r.json());
-  if(!r.ok) return show("danger",r.msg);
+              .then(r=>r.json());
+
+  if(!r.ok){ show("danger",r.msg); return; }
   show("success",r.msg);
 }
 
 /* ---------- helpers -------------------------------------------------- */
-const post = b=>({method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+const post = b=>({ method:"POST",
+                   headers:{'Content-Type':'application/json'},
+                   body:JSON.stringify(b) });
+
 function show(type,txt){
-  elMsg.className=`alert alert-${type}`;
-  elMsg.textContent=txt;
-  elMsg.hidden=false;
+  elMsg.className = `alert alert-${type}`;
+  elMsg.textContent = txt;
+  elMsg.hidden = false;
 }
-function id(x){return document.getElementById(x);}
+function id(x){ return document.getElementById(x); }
