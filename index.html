@@ -1,18 +1,24 @@
-<!doctype html><html lang="it"><head>
-<meta charset="utf-8"><title>Locker</title>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Armadio&nbsp;<span id="titBox"></span></title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head><body class="bg-light">
-<div class="container py-5">
-  <h1>Armadio <span id="boxLbl"></span></h1>
+</head>
+<body class="p-4">
 
-  <div id="alert" class="alert d-none"></div>
+<h1>Armadio <span id="titBox"></span></h1>
 
-  <div id="needPin" class="input-group mb-3 d-none" style="max-width:260px">
-     <input id="pin" class="form-control" placeholder="PIN">
-     <button id="regBtn" class="btn btn-primary">Registra dispositivo</button>
-  </div>
+<div id="msg" class="alert" hidden></div>
 
-  <button id="openBtn" class="btn btn-success d-none">Apri armadietto</button>
+<div id="pinGrp" class="input-group mb-3" hidden>
+  <span class="input-group-text">PIN</span>
+  <input id="pin" class="form-control" maxlength="6" autocomplete="one-time-code">
+  <button id="btnReg" class="btn btn-primary">Registra dispositivo</button>
 </div>
+
+<button id="btnOpen" class="btn btn-success" hidden>Apri armadietto</button>
+
 <script src="app.js"></script>
-</body></html>
+</body>
+</html>
