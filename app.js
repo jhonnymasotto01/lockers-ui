@@ -1,77 +1,69 @@
-// URL del Worker – modifica con il tuo sub-domain *.workers.dev
+// ⚙️  sostituisci con il TUO sottodominio *.workers.dev
 const API = "https://lockers-api.cqc2qfkwcw.workers.dev";
 
-const url = new URL(location.href);
-const box = url.searchParams.get("box");
+const url  = new URL(location.href);
+const box  = url.searchParams.get("box");
+id("titBox").textContent = box || "?";
 
-const elMsg     = id("msg");
-const elPinGrp  = id("pinGrp");
-const elPin     = id("pin");
-const btnReg    = id("btnReg");
-const btnOpen   = id("btnOpen");
+const elMsg = id("msg"),
+      elPin = id("pin"),
+      grp   = id("pinGrp"),
+      bReg  = id("btnReg"),
+      bOpen = id("btnOpen");
 
-if(!box) showMsg("danger","Parametro ?box mancante");
-else     init();
+if (!box)  return show("danger","Parametro ?box mancante");
+init();
 
-btnReg.onclick  = register;
-btnOpen.onclick = openBox;
+bReg.onclick  = onRegister;
+bOpen.onclick = onOpen;
 
-// ─────────────────────────────────────────────────────────────────────────────
+/* ---------- init ----------------------------------------------------- */
 async function init(){
-  try{
-    const r = await fetch(`${API}/status?box=${box}`).then(r=>r.json());
-    if(!r.ok){ showMsg("danger",r.msg); return; }
+  const r = await fetch(`${API}/state?box=${box}`).then(r=>r.json())
+                .catch(()=>({ok:false,msg:"API non raggiungibile"}));
 
-    if(!r.booked){
-      showMsg("warning","Box libero, nessuna prenotazione.");
-      return;
-    }
+  if(!r.ok)          return show("danger",r.msg);
+  if(!r.booked){     return show("warning","Box libero, niente prenotazione."); }
 
-    if(r.registered){
-      showMsg("success","Dispositivo riconosciuto.");
-      btnOpen.hidden = false;
-    }else{
-      showMsg("info","Inserisci il PIN della prenotazione.");
-      elPinGrp.hidden = false;
-    }
-  }catch(e){
-    showMsg("danger","API non raggiungibile");
-    console.error(e);
+  // c’è una prenotazione: device registrato?
+  const me  = navigator.userAgent;
+  const chk = await fetch(`${API}/open?box=${box}&device=${encodeURIComponent(me)}`);
+  if(chk.status===403){          // non registrato
+    grp.hidden=false;
+    show("info","Inserisci il PIN della prenotazione");
+  }else{                         // già registrato
+    show("success","Dispositivo riconosciuto");
+    bOpen.hidden=false;
   }
 }
 
-async function register(){
-  const pin = elPin.value.trim();
-  if(!pin){ alert("Inserisci PIN"); return; }
+/* ---------- registra dispositivo ------------------------------------ */
+async function onRegister(){
+  const pincode = elPin.value.trim();
+  if(!pincode) return alert("Inserisci il PIN");
 
-  const body = {box, pin, device: navigator.userAgent };
-  const r = await fetch(`${API}/register`,req(body)).then(r=>r.json());
-  if(!r.ok){ showMsg("danger",r.msg); return; }
+  const body = { box:+box, pincode, device:navigator.userAgent };
+  const r = await fetch(`${API}/register`,post(body)).then(r=>r.json());
+  if(!r.ok)  return show("danger",r.msg);
 
-  showMsg("success",r.msg);
-  elPinGrp.hidden = true;
-  btnOpen.hidden  = false;
+  show("success",r.msg);
+  grp.hidden=true; bOpen.hidden=false;
 }
 
-async function openBox(){
-  const body = {box, device:navigator.userAgent};
-  const r = await fetch(`${API}/open`,req(body)).then(r=>r.json());
-  if(!r.ok){ showMsg("danger",r.msg); return; }
-
-  showMsg("success",r.msg);
+/* ---------- apri ----------------------------------------------------- */
+async function onOpen(){
+  const me = navigator.userAgent;
+  const r  = await fetch(`${API}/open?box=${box}&device=${encodeURIComponent(me)}`)
+             .then(r=>r.json());
+  if(!r.ok) return show("danger",r.msg);
+  show("success",r.msg);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-function req(body){
-  return { method:"POST",
-           headers:{ "Content-Type":"application/json" },
-           body:JSON.stringify(body) };
+/* ---------- helpers -------------------------------------------------- */
+const post = b=>({method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+function show(type,txt){
+  elMsg.className=`alert alert-${type}`;
+  elMsg.textContent=txt;
+  elMsg.hidden=false;
 }
-
-function showMsg(type,txt){
-  elMsg.className = `alert alert-${type}`;   // usa Bootstrap?
-  elMsg.textContent = txt;
-  elMsg.hidden = false;
-}
-
 function id(x){return document.getElementById(x);}
