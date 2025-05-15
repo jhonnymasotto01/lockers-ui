@@ -1,5 +1,5 @@
 // URL del Worker – modifica con il tuo sub-domain *.workers.dev
-const API = "https://lockers-api.cqc2qfkwcw.workers.dev/";
+const API = "https://lockers-api.cqc2qfkwcw.workers.dev";
 
 const url = new URL(location.href);
 const box = url.searchParams.get("box");
