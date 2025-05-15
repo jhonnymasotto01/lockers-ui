@@ -1,41 +1,46 @@
-/* ---------- config ---------------------------------------------------- */
-const api   = "https://lockers-api.cqc2qfkwcw.workers.dev/";
-const url   = new URL(location.href);
-const boxId = +url.searchParams.get("box") || 0;
-document.getElementById("title").textContent = `Locker ${boxId}`;
+const API = "https://lockers-api.cqc2qfkwcw.workers.dev";  // <-- cambia
 
-const devId = localStorage.devId ||= crypto.randomUUID();
+const qs  = new URLSearchParams(location.search);
+const box = Number(qs.get("box"));
+document.getElementById("boxLbl").textContent = box || "-";
 
-/* ---------- elementi -------------------------------------------------- */
-const regSec = document.getElementById("reg");
-const openSec= document.getElementById("open");
-const msg    = document.getElementById("msg");
-const okText = document.getElementById("ok");
+const alertBox = document.getElementById("alert");
+function showMsg(type,msg){
+  alertBox.className = `alert alert-${type}`; alertBox.textContent = msg;
+  alertBox.classList.remove("d-none");
+}
 
-async function check(){
-  const r = await fetch(`${api}/check?box=${boxId}&dev=${devId}`).then(r=>r.json());
-  if (r.ok){
-    regSec.hidden = true;  openSec.hidden = false;
-  } else {
-    regSec.hidden = false; openSec.hidden = true;
+function hide(id){ document.getElementById(id).classList.add("d-none"); }
+function show(id){ document.getElementById(id).classList.remove("d-none"); }
+
+if(!Number.isInteger(box)||box<100||box>183){ showMsg("danger","Box non valido"); }
+else loadStatus();
+
+async function loadStatus(){
+  const r = await fetch(`${API}/status?box=${box}`).then(r=>r.json());
+  if(!r.ok){ showMsg("danger",r.msg); return; }
+
+  if(!r.booked){ showMsg("warning","Box libero, nessuna prenotazione."); return; }
+
+  if(r.registered){
+    showMsg("success","Dispositivo riconosciuto.");
+    show("openBtn");
+  }else{
+    showMsg("info","Inserisci il PIN della tua prenotazione.");
+    show("needPin");
   }
 }
 
-document.getElementById("btnReg").onclick = async ()=>{
-  msg.textContent="";
+document.getElementById("regBtn").onclick = async ()=>{
   const pin = document.getElementById("pin").value.trim();
-  if(!pin){msg.textContent="Inserisci PIN";return;}
-  const res = await fetch(api+"/register",{method:"POST",
-        headers:{ "content-type":"application/json"},
-        body: JSON.stringify({box:boxId,pin,dev:devId})}).then(r=>r.json());
-  if(res.ok){ await check(); }
-  else msg.textContent="PIN errato";
+  if(!pin) return;
+  const r = await fetch(`${API}/register?box=${box}&pin=${pin}`).then(r=>r.json());
+  if(r.ok){ hide("needPin"); loadStatus(); }
+  else showMsg("danger",r.msg);
 };
 
-document.getElementById("btnOpen").onclick = async ()=>{
-  okText.textContent="";
-  const res = await fetch(`${api}/open?dev=${devId}`).then(r=>r.json());
-  okText.textContent = res.ok ? "Aperto!" : "Errore";
+document.getElementById("openBtn").onclick = async ()=>{
+  const r = await fetch(`${API}/open?box=${box}`).then(r=>r.json());
+  if(r.ok) showMsg("success","Apertura inviata!");
+  else     showMsg("danger",r.msg);
 };
-
-check();
