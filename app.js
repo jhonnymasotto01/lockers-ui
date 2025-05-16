@@ -1,26 +1,24 @@
+// app.js
+
+// ─── destrutturiamo le funzioni UI importate da ui.js ────────────────
 const {
-  show, updateStatusDot,
-  showLoader, hideLoader,
-  showNotBooked, showInteraction, showRegisteredUI,
+  show,
+  updateStatusDot,
+  showLoader,
+  hideLoader,
+  showNotBooked,
+  showInteraction,
+  showRegisteredUI,
   resetAlerts
 } = window.ui;
 
-// URL del tuo Worker
+// ─── URL del Worker e helper per id() ───────────────────────────────
 const API = "https://lockers-api.cqc2qfkwcw.workers.dev";
-
-// helper per id()
 function id(x){ return document.getElementById(x); }
 
-// ... (il resto di app.js rimane identico fino a init)
-
-
-// ------------------------------ NON TOCCARE ----------------------------
-
-// URL del tuo Worker
-const API = "https://lockers-api.cqc2qfkwcw.workers.dev";
-
-const url  = new URL(location.href);
-const box  = url.searchParams.get("box");
+// ─── riferimenti DOM e box param ────────────────────────────────────
+const url   = new URL(location.href);
+const box   = url.searchParams.get("box");
 id("titBox").textContent = box || "?";
 
 const elMsg = id("msg"),
@@ -29,34 +27,43 @@ const elMsg = id("msg"),
       bReg  = id("btnReg"),
       bOpen = id("btnOpen");
 
-// Se manca il box, mostriamo subito l’errore
+// ─── event handler ─────────────────────────────────────────────────
+bReg .onclick = onRegister;
+bOpen.onclick = onOpen;
+
+// ─── se manca ?box mostriamo errore, altrimenti iniziamo ────────────
 if (!box) {
-  show("danger","Parametro ?box mancante");
+  show("danger", "Parametro ?box mancante");
 } else {
   init();
 }
 
-bReg .onclick = onRegister;
-bOpen.onclick = onOpen;
-
-/* ───────────────────────────────────────── init ───────────────────────────────────────── */
+// ─────────────────────────────────────────── init ────────────────────
 async function init(){
+  resetAlerts();
+  showLoader();
+
   // 1) /state
   let stateResp;
   try {
-    const res  = await fetch(`${API}/state?box=${box}`);
-    stateResp = await res.json();
+    const res       = await fetch(`${API}/state?box=${box}`);
+    stateResp       = await res.json();
     if (!res.ok) throw new Error(stateResp.msg || `Errore ${res.status}`);
   } catch (e) {
-    return show("danger", e.message === "Failed to fetch" ? "API non raggiungibile" : e.message);
+    hideLoader();
+    return show("danger", e.message === "Failed to fetch" ? "apiUnreachable" : e.message);
   }
 
-  // 2) Se non è prenotato
+  // aggiorno bollino + testo
+  updateStatusDot(stateResp.booked);
+
+  // 2) se non è prenotato → messaggio centrale
   if (!stateResp.booked) {
-    return show("warning","Box libero, nessuna prenotazione.");
+    hideLoader();
+    return showNotBooked();
   }
 
-  // 3) Dry-run per vedere se il device è già registrato
+  // 3) dry-run per vedere se il device è già registrato
   let dry;
   try {
     const resp = await fetch(
@@ -64,21 +71,21 @@ async function init(){
     );
     dry = await resp.json();
   } catch (_) {
-    return show("danger","API non raggiungibile");
+    hideLoader();
+    return show("danger", "apiUnreachable");
   }
+  hideLoader();
 
   if (dry.ok) {
-    // già registrato
-    show("success","Dispositivo riconosciuto");
-    bOpen.hidden = false;
+    show("success", "deviceRecognized");
+    return showRegisteredUI();
   } else {
-    // non registrato → mostro il PIN
-    grp.hidden = false;
-    show("info", dry.msg || "Inserisci il PIN della prenotazione");
+    show("info", "enterPin");
+    return showInteraction();
   }
 }
 
-/* ──────────────────────────────────────── register ──────────────────────────────────────── */
+// ─────────────────────────────────────── register ────────────────────
 async function onRegister(){
   const pin = elPin.value.trim();
   if (!pin) return alert("Inserisci il PIN");
@@ -87,30 +94,26 @@ async function onRegister(){
   try {
     const resp = await fetch(`${API}/register`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type":"application/json" },
       body: JSON.stringify({
-        box: +box,
-        pincode: pin,
-        device: navigator.userAgent
+        box:+box,
+        pincode:pin,
+        device:navigator.userAgent
       })
     });
     reg = await resp.json();
   } catch (_) {
-    return show("danger","API non raggiungibile");
+    return show("danger","apiUnreachable");
   }
 
   if (!reg.ok) {
-    // PIN errato o altro
     return show("danger", reg.msg || "Errore durante la registrazione");
   }
-
-  // OK!
   show("success", reg.msg);
-  grp.hidden  = true;
-  bOpen.hidden = false;
+  showRegisteredUI();
 }
 
-/* ────────────────────────────────────────── open ───────────────────────────────────────── */
+// ───────────────────────────────────────── open ───────────────────────
 async function onOpen(){
   let op;
   try {
@@ -119,20 +122,11 @@ async function onOpen(){
     );
     op = await resp.json();
   } catch (_) {
-    return show("danger","API non raggiungibile");
+    return show("danger","apiUnreachable");
   }
 
   if (!op.ok) {
     return show("danger", op.msg || "Errore durante l’apertura");
   }
-
   show("success", op.msg);
 }
-
-/* ───────────────────────────────────────── helpers ───────────────────────────────────────── */
-function show(type, txt){
-  elMsg.className   = `alert alert-${type}`;
-  elMsg.textContent = txt;
-  elMsg.hidden      = false;
-}
-function id(x){ return document.getElementById(x); }
