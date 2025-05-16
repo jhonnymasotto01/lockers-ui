@@ -55,16 +55,23 @@ function setLang(l) {
   // ritraggo tutti i testi con data-i18n
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
-    el.textContent = translations[l][key] || el.textContent;
+    el.textContent = translations[lang][key] || el.textContent;
   });
 
   // ritraggo tutti i placeholder
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     const key = el.getAttribute("data-i18n-placeholder");
-    el.placeholder = translations[l][key] || "";
+    el.placeholder = translations[lang][key] || "";
   });
 
-  // se ho già recuperato lo stato prenotato, ritraslo anche per "Prenotato/Non prenotato"
+  // ritraduco anche il div#msg se ha una data-i18n
+  const msgEl = id("msg");
+  const msgKey = msgEl.getAttribute("data-i18n");
+  if (msgKey) {
+    msgEl.textContent = translations[lang][msgKey];
+  }
+
+  // ritraduco il bollino Prenotato/Non prenotato
   if (typeof window.currentBooked !== "undefined") {
     updateStatusDot(window.currentBooked);
   }
@@ -76,7 +83,6 @@ id("lang-en").addEventListener("click", () => setLang("en"));
 
 // lingua iniziale
 setLang(lang);
-
 
 // ─── funzioni di UI ─────────────────────────────────────────────────
 // mostra loader e nasconde contenuto
