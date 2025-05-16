@@ -22,7 +22,7 @@ const translations = {
     apiUnreachable:  "API non raggiungibile",
     deviceRecognized:"Dispositivo riconosciuto",
     enterPin:        "Inserisci il PIN della prenotazione"
-    loading:         "Caricamento in corso\u2026"
+    loading:         "Caricamento in corso"
   },
   en: {
     appTitle:        "Locker App",
