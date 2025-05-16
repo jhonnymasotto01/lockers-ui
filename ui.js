@@ -1,20 +1,6 @@
 // ui.js
 
-// ───── DOM references ─────────────────────────────────────
-const loader            = id("loader");
-const notBookedMessage  = id("notBookedMessage");
-const interaction       = id("interaction");
-const msgEl             = id("msg");
-const pinGrp            = id("pinGrp");
-const boxTitleEl        = id("titBox");
-const statusDot         = document.querySelector(".status-dot");
-const statusText        = id("statusText");
-const langButtons       = {
-  it: id("lang-it"),
-  en: id("lang-en")
-};
-
-// ───── traduzioni ────────────────────────────────────────
+// ─── traduzioni ──────────────────────────────────────────────────────
 const translations = {
   it: {
     appTitle:        "Locker App",
@@ -46,95 +32,79 @@ const translations = {
   }
 };
 
-// lingua di default (salvata in localStorage)
+// lingua di default
 let lang = localStorage.getItem("lang") || "it";
 
-// ───── all'avvio pagina ─────────────────────────────────
-document.addEventListener("DOMContentLoaded", () => {
-  // setta la lingua
-  setLang(lang);
-  // nascondi loader e sezioni
-  loader.hidden           = true;
-  interaction.hidden      = true;
-  notBookedMessage.hidden = true;
-});
+// helper per selezionare elementi
+function id(x){ return document.getElementById(x); }
 
-// ───── language switcher events ─────────────────────────
-langButtons.it.addEventListener("click", ()=> setLang("it"));
-langButtons.en.addEventListener("click", ()=> setLang("en"));
-
-// ───── funzioni di supporto ─────────────────────────────
+// ─── cambio lingua ──────────────────────────────────────────────────
 function setLang(l) {
   lang = l;
   localStorage.setItem("lang", l);
-  // evidenzia il selezionato
-  Object.values(langButtons).forEach(b => b.classList.remove("selected"));
-  langButtons[l].classList.add("selected");
-  // aggiorna tutti i testi
+
+  // evidenzia i pulsanti
+  id("lang-it").classList.toggle("selected", l === "it");
+  id("lang-en").classList.toggle("selected", l === "en");
+
+  // testi
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
-    el.textContent = translations[lang][key] || el.textContent;
+    el.textContent = translations[l][key] || el.textContent;
   });
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     const key = el.getAttribute("data-i18n-placeholder");
-    el.placeholder = translations[lang][key] || "";
+    el.placeholder = translations[l][key] || "";
   });
 }
+id("lang-it").addEventListener("click", () => setLang("it"));
+id("lang-en").addEventListener("click", () => setLang("en"));
+setLang(lang);
 
-function getText(key) {
-  return translations[lang][key];
+// ─── funzioni di UI (usate da app.js) ─────────────────────────────
+function show(type, keyOrMsg) {
+  const el = id("msg");
+  el.className = `alert alert-${type} rounded-pill`;
+  el.textContent = translations[lang][keyOrMsg] || keyOrMsg;
+  el.hidden = false;
 }
 
-function updateStatus(booked) {
-  if (booked == null) return;
-  if (booked) {
-    statusDot.style.backgroundColor = "var(--green-dot)";
-    statusText.textContent = getText("statusBooked");
-  } else {
-    statusDot.style.backgroundColor = "var(--yellow-dot)";
-    statusText.textContent = getText("statusNotBooked");
-  }
-}
-
-function showLoader() {
-  loader.hidden = false;
-  interaction.hidden      = true;
-  notBookedMessage.hidden = true;
-  msgEl.hidden            = true;
-}
-
-function hideLoader() {
-  loader.hidden = true;
+function updateStatusDot(booked) {
+  const dot = id("statusDot");
+  dot.style.background = booked ? "#28a745" : "#ffc107";
+  id("statusText").textContent =
+    booked
+      ? translations[lang].statusBooked
+      : translations[lang].statusNotBooked;
 }
 
 function showNotBooked() {
-  notBookedMessage.hidden = false;
-  interaction.hidden      = true;
+  id("notBookedMessage").hidden = false;
+  id("pinGrp").hidden           = true;
+  id("btnOpen").hidden          = true;
 }
 
 function showInteraction() {
-  interaction.hidden      = false;
-  notBookedMessage.hidden = true;
+  id("notBookedMessage").hidden = true;
+  id("pinGrp").hidden           = false;
+  id("btnOpen").hidden          = true;
 }
 
-function showDanger(keyOrMsg) {
-  msgEl.className   = "alert alert-danger rounded-pill";
-  msgEl.textContent = translations[lang][keyOrMsg] || keyOrMsg;
-  msgEl.hidden      = false;
+function showRegisteredUI() {
+  id("pinGrp").hidden  = true;
+  id("btnOpen").hidden = false;
 }
 
-function showSuccess(keyOrMsg) {
-  msgEl.className   = "alert alert-success rounded-pill";
-  msgEl.textContent = translations[lang][keyOrMsg] || keyOrMsg;
-  msgEl.hidden      = false;
+function resetAlerts() {
+  id("msg").hidden = true;
 }
 
-function showInfo(keyOrMsg) {
-  msgEl.className   = "alert alert-info rounded-pill";
-  msgEl.textContent = translations[lang][keyOrMsg] || keyOrMsg;
-  msgEl.hidden      = false;
-}
-
-function id(x) {
-  return document.getElementById(x);
-}
+// esporre in globale per app.js
+window.ui = {
+  show,
+  updateStatusDot,
+  showNotBooked,
+  showInteraction,
+  showRegisteredUI,
+  resetAlerts
+};
