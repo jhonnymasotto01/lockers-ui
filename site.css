@@ -183,7 +183,7 @@ main {
 /* 2) Titolo responsive su smartphone */
 @media (max-width: 576px) {
   header h1 {
-    font-size: 2rem;      /* riduci la dimensione su dispositivi piccoli */
+    font-size: 1.5rem;      /* riduci la dimensione su dispositivi piccoli */
   }
 }
 
