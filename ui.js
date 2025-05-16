@@ -50,44 +50,38 @@ function setLang(l) {
   lang = l;
   localStorage.setItem("lang", l);
 
-  // 1) evidenzio il pulsante selezionato
+  // 1) toggle pulsanti
   id("lang-it").classList.toggle("selected", l === "it");
   id("lang-en").classList.toggle("selected", l === "en");
 
-  // 2) aggiorno tutti i testi con data-i18n
+  // 2) traduci tutti gli elementi con data-i18n
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
-    if (translations[l][key] !== undefined) {
-      el.textContent = translations[l][key];
-    }
+    el.textContent = translations[lang][key] || el.textContent;
   });
 
-  // 3) aggiorno tutti i placeholder con data-i18n-placeholder
+  // 3) traduci tutti i placeholder
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     const key = el.getAttribute("data-i18n-placeholder");
-    if (translations[l][key] !== undefined) {
-      el.placeholder = translations[l][key];
-    }
+    el.placeholder = translations[lang][key] || "";
   });
 
-  // 4) ritraduco anche il messaggio in #msg se ha un data-i18n
+  // 4) se #msg ha una data-i18n, ritraducilo
   const msgEl = id("msg");
   const msgKey = msgEl.getAttribute("data-i18n");
-  if (msgKey && translations[l][msgKey] !== undefined) {
-    msgEl.textContent = translations[l][msgKey];
+  if (msgKey) {
+    msgEl.textContent = translations[lang][msgKey];
   }
 
-  // 5) se ho già recuperato lo stato prenotato, ritraduco anche il bollino
+  // 5) ritraduco anche lo stato Prenotato/Non prenotato
   if (typeof window.currentBooked !== "undefined") {
     updateStatusDot(window.currentBooked);
   }
 }
 
-// bind degli eventi
+// bind degli eventi e avvio
 id("lang-it").addEventListener("click", () => setLang("it"));
 id("lang-en").addEventListener("click", () => setLang("en"));
-
-// lingua iniziale
 setLang(lang);
 
 // ─── funzioni di UI ─────────────────────────────────────────────────
