@@ -43,25 +43,40 @@ const translations = {
 let lang = localStorage.getItem("lang") || "it";
 
 // ─── cambio lingua ──────────────────────────────────────────────────
+// ─── cambio lingua ──────────────────────────────────────────────────
 function setLang(l) {
   lang = l;
   localStorage.setItem("lang", l);
 
+  // evidenzio il pulsante selezionato
   id("lang-it").classList.toggle("selected", l === "it");
   id("lang-en").classList.toggle("selected", l === "en");
 
+  // ritraggo tutti i testi con data-i18n
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
     el.textContent = translations[l][key] || el.textContent;
   });
+
+  // ritraggo tutti i placeholder
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     const key = el.getAttribute("data-i18n-placeholder");
     el.placeholder = translations[l][key] || "";
   });
+
+  // se ho già recuperato lo stato prenotato, ritraslo anche per "Prenotato/Non prenotato"
+  if (typeof window.currentBooked !== "undefined") {
+    updateStatusDot(window.currentBooked);
+  }
 }
+
+// bind degli eventi
 id("lang-it").addEventListener("click", () => setLang("it"));
 id("lang-en").addEventListener("click", () => setLang("en"));
+
+// lingua iniziale
 setLang(lang);
+
 
 // ─── funzioni di UI ─────────────────────────────────────────────────
 // mostra loader e nasconde contenuto
