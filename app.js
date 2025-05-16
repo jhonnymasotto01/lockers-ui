@@ -135,6 +135,9 @@ window.currentBooked = stateResp.booked;
   // 3) OPEN
   // ───────────────────────────────────────────────────────────────
   async function onOpen(){
+      // mostro caricamento
+  resetAlerts();
+  show("info", "loading");
     let op;
     try {
       const resp = await fetch(
