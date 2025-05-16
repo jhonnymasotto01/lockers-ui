@@ -4,41 +4,40 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Locker App</title>
+  <!-- collega il CSS esterno -->
+  <link rel="stylesheet" href="site.css">
 </head>
 <body>
-  <!-- messaggi di alert -->
+  <!-- qui app.js inietterà header, main e footer -->
   <div id="msg" class="alert" hidden></div>
 
-  <!-- contenitore per PIN + bottone registra -->
-  <div id="pinGrp" class="mb-3" hidden>
-    <input 
-      id="pin" 
-      type="text" 
-      maxlength="6" 
+  <div id="pinGrp" hidden>
+    <input
+      id="pin"
+      type="text"
+      maxlength="6"
       autocomplete="one-time-code"
       data-i18n-placeholder="pinPlaceholder"
       placeholder="PIN">
-    <button 
-      id="btnReg" 
+    <button
+      id="btnReg"
       data-i18n="registerBtn">
       Registra ora
     </button>
   </div>
 
-  <!-- bottone per aprire -->
-  <button 
-    id="btnOpen" 
-    data-i18n="openBtn" 
+  <button
+    id="btnOpen"
+    data-i18n="openBtn"
     hidden>
     Apri ora
   </button>
 
-  <!-- info aggiuntiva sotto i bottoni -->
   <p id="infoText" data-i18n="infoText" hidden>
     La registrazione avviene sul dispositivo attualmente connesso e quindi solo con tale dispositivo si potrà aprire.
   </p>
 
-  <!-- qui carichiamo il nostro app.js che inietta tutto il resto -->
+  <!-- lo script principale (già carica anche la UI) -->
   <script src="app.js"></script>
 </body>
 </html>
