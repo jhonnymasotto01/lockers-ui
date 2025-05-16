@@ -1,6 +1,8 @@
 // app.js
-(function(){
-  // ─── destrutturiamo le funzioni UI importate da ui.js ────────────────
+;(function(){
+  // ───────────────────────────────────────────────────────────────
+  // IMPORT UI FUNCTIONS (from ui.js)
+  // ───────────────────────────────────────────────────────────────
   const {
     show,
     updateStatusDot,
@@ -12,11 +14,15 @@
     resetAlerts
   } = window.ui;
 
-  // ─── URL del Worker e helper per id() ───────────────────────────────
+  // ───────────────────────────────────────────────────────────────
+  // CONFIG & HELPERS
+  // ───────────────────────────────────────────────────────────────
   const API = "https://lockers-api.cqc2qfkwcw.workers.dev";
   function id(x){ return document.getElementById(x); }
 
-  // ─── riferimenti DOM e box param ────────────────────────────────────
+  // ───────────────────────────────────────────────────────────────
+  // DOM REFS & PARAMS
+  // ───────────────────────────────────────────────────────────────
   const url   = new URL(location.href);
   const box   = url.searchParams.get("box");
   id("titBox").textContent = box || "?";
@@ -27,43 +33,49 @@
         bReg  = id("btnReg"),
         bOpen = id("btnOpen");
 
-  // ─── event handler ─────────────────────────────────────────────────
-  bReg.onclick  = onRegister;
+  // ───────────────────────────────────────────────────────────────
+  // BIND EVENTS
+  // ───────────────────────────────────────────────────────────────
+  bReg .onclick = onRegister;
   bOpen.onclick = onOpen;
 
-  // ─── se manca ?box mostriamo errore, altrimenti iniziamo ────────────
+  // ───────────────────────────────────────────────────────────────
+  // START
+  // ───────────────────────────────────────────────────────────────
   if (!box) {
     show("danger", "Parametro ?box mancante");
   } else {
     init();
   }
 
-  // ─────────────────────────────────────────── init ────────────────────
+  // ───────────────────────────────────────────────────────────────
+  // 1) INIT: STATE → REGISTERED? → INTERACTION UI
+  // ───────────────────────────────────────────────────────────────
   async function init(){
     resetAlerts();
     showLoader();
 
-    // 1) /state
+    // a) /state
     let stateResp;
     try {
-      const res       = await fetch(`${API}/state?box=${box}`);
-      stateResp       = await res.json();
+      const res = await fetch(`${API}/state?box=${box}`);
+      stateResp = await res.json();
       if (!res.ok) throw new Error(stateResp.msg || `Errore ${res.status}`);
     } catch (e) {
       hideLoader();
       return show("danger", e.message === "Failed to fetch" ? "apiUnreachable" : e.message);
     }
 
-    // aggiorno bollino + testo
+    // b) update header dot/text
     updateStatusDot(stateResp.booked);
 
-    // 2) se non è prenotato → nascondo loader e mostro mess centrale
+    // c) not booked?
     if (!stateResp.booked) {
       hideLoader();
       return showNotBooked();
     }
 
-    // 3) dry-run per vedere se il device è già registrato
+    // d) dry-run register?
     let dry;
     try {
       const resp = await fetch(
@@ -78,14 +90,16 @@
 
     if (dry.ok) {
       show("success","deviceRecognized");
-      return showRegisteredUI();
+      showRegisteredUI();
     } else {
       show("info","enterPin");
-      return showInteraction();
+      showInteraction();
     }
   }
 
-  // ─────────────────────────────────────── register ────────────────────
+  // ───────────────────────────────────────────────────────────────
+  // 2) REGISTER
+  // ───────────────────────────────────────────────────────────────
   async function onRegister(){
     const pin = elPin.value.trim();
     if (!pin) return alert("Inserisci il PIN");
@@ -113,7 +127,9 @@
     showRegisteredUI();
   }
 
-  // ─────────────────────────────────────── open ────────────────────────
+  // ───────────────────────────────────────────────────────────────
+  // 3) OPEN
+  // ───────────────────────────────────────────────────────────────
   async function onOpen(){
     let op;
     try {
@@ -131,4 +147,4 @@
     show("success", op.msg);
   }
 
-})();
+})();  // ← end IIFE
