@@ -57,7 +57,7 @@ async function init(){
   // aggiorno bollino + testo
   updateStatusDot(stateResp.booked);
 
-  // 2) se non è prenotato → messaggio centrale
+  // 2) se non è prenotato → nascondo loader e mostro messaggio centrale
   if (!stateResp.booked) {
     hideLoader();
     return showNotBooked();
@@ -72,7 +72,7 @@ async function init(){
     dry = await resp.json();
   } catch (_) {
     hideLoader();
-    return show("danger", "apiUnreachable");
+    return show("danger","apiUnreachable");
   }
   hideLoader();
 
@@ -113,7 +113,7 @@ async function onRegister(){
   showRegisteredUI();
 }
 
-// ───────────────────────────────────────── open ───────────────────────
+// ─────────────────────────────────────── open ────────────────────────
 async function onOpen(){
   let op;
   try {
