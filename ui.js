@@ -1,5 +1,12 @@
 // ui.js
 
+// ─── helper per selezionare elementi ─────────────────────────────────
+function id(x){ return document.getElementById(x); }
+
+// ─── inietto subito il numero armadietto in header ──────────────────
+const boxParam = new URL(location.href).searchParams.get("box") || "?";
+id("titBox").textContent = boxParam;
+
 // ─── traduzioni ──────────────────────────────────────────────────────
 const translations = {
   it: {
@@ -35,19 +42,14 @@ const translations = {
 // lingua di default
 let lang = localStorage.getItem("lang") || "it";
 
-// helper per selezionare elementi
-function id(x){ return document.getElementById(x); }
-
 // ─── cambio lingua ──────────────────────────────────────────────────
 function setLang(l) {
   lang = l;
   localStorage.setItem("lang", l);
 
-  // evidenzia i pulsanti
   id("lang-it").classList.toggle("selected", l === "it");
   id("lang-en").classList.toggle("selected", l === "en");
 
-  // testi
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
     el.textContent = translations[l][key] || el.textContent;
@@ -61,14 +63,25 @@ id("lang-it").addEventListener("click", () => setLang("it"));
 id("lang-en").addEventListener("click", () => setLang("en"));
 setLang(lang);
 
-// ─── funzioni di UI (usate da app.js) ─────────────────────────────
+// ─── funzioni di UI ─────────────────────────────────────────────────
+// mostra loader e nasconde contenuto
+function showLoader() {
+  id("loader").hidden  = false;
+  id("content").hidden = true;
+}
+// nasconde loader e mostra contenuto
+function hideLoader() {
+  id("loader").hidden  = true;
+  id("content").hidden = false;
+}
+// messaggi di stato
 function show(type, keyOrMsg) {
   const el = id("msg");
-  el.className = `alert alert-${type} rounded-pill`;
+  el.className   = `alert alert-${type} rounded-pill`;
   el.textContent = translations[lang][keyOrMsg] || keyOrMsg;
-  el.hidden = false;
+  el.hidden      = false;
 }
-
+// aggiorna bollino + testo "Prenotato"/"Non prenotato"
 function updateStatusDot(booked) {
   const dot = id("statusDot");
   dot.style.background = booked ? "#28a745" : "#ffc107";
@@ -77,32 +90,36 @@ function updateStatusDot(booked) {
       ? translations[lang].statusBooked
       : translations[lang].statusNotBooked;
 }
-
+// UI per i vari stati
 function showNotBooked() {
   id("notBookedMessage").hidden = false;
   id("pinGrp").hidden           = true;
   id("btnOpen").hidden          = true;
+  id("infoText").hidden         = true;
 }
-
 function showInteraction() {
   id("notBookedMessage").hidden = true;
   id("pinGrp").hidden           = false;
   id("btnOpen").hidden          = true;
+  id("infoText").hidden         = false;
 }
-
 function showRegisteredUI() {
-  id("pinGrp").hidden  = true;
-  id("btnOpen").hidden = false;
+  id("notBookedMessage").hidden = true;
+  id("pinGrp").hidden           = true;
+  id("btnOpen").hidden          = false;
+  id("infoText").hidden         = false;
 }
-
+// reset di ogni alert
 function resetAlerts() {
   id("msg").hidden = true;
 }
 
-// esporre in globale per app.js
+// esportazione per app.js
 window.ui = {
   show,
   updateStatusDot,
+  showLoader,
+  hideLoader,
   showNotBooked,
   showInteraction,
   showRegisteredUI,
