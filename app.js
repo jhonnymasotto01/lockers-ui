@@ -1,4 +1,18 @@
-const { show, updateStatusDot, showNotBooked, showInteraction, showRegisteredUI, resetAlerts } = window.ui;
+const {
+  show, updateStatusDot,
+  showLoader, hideLoader,
+  showNotBooked, showInteraction, showRegisteredUI,
+  resetAlerts
+} = window.ui;
+
+// URL del tuo Worker
+const API = "https://lockers-api.cqc2qfkwcw.workers.dev";
+
+// helper per id()
+function id(x){ return document.getElementById(x); }
+
+// ... (il resto di app.js rimane identico fino a init)
+
 
 // ------------------------------ NON TOCCARE ----------------------------
 
