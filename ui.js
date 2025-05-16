@@ -65,15 +65,22 @@ setLang(lang);
 
 // ─── funzioni di UI ─────────────────────────────────────────────────
 // mostra loader e nasconde contenuto
+// ─── mostra loader e nasconde tutte le altre aree ────────────────────
 function showLoader() {
-  id("loader").hidden  = false;
-  id("content").hidden = true;
+  id("loader").hidden      = false;
+  id("statusDot").hidden   = true;
+  id("statusText").hidden  = true;
+  id("content").hidden     = true;
 }
-// nasconde loader e mostra contenuto
+
+// ─── nasconde loader e mostra di nuovo tutto ───────────────────────
 function hideLoader() {
-  id("loader").hidden  = true;
-  id("content").hidden = false;
+  id("loader").hidden      = true;
+  id("statusDot").hidden   = false;
+  id("statusText").hidden  = false;
+  id("content").hidden     = false;
 }
+
 // messaggi di stato
 function show(type, keyOrMsg) {
   const el = id("msg");
