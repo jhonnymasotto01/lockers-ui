@@ -15,20 +15,25 @@
       <button id="lang-en">🇬🇧</button>
     </div>
     <div class="status">
-      <span class="status-dot" id="statusDot"></span>
-      <span class="status-text" id="statusText">…</span>
-      <span>
-        <strong data-i18n="boxLabel">Armadietto</strong>
-        <strong id="titBox">?</strong>
-      </span>
+      <!-- Box label + number -->
+      <strong>
+        <span data-i18n="boxLabel">Armadietto</span>
+        <span id="titBox">?</span>
+      </strong>
+
+      <!-- Spinner sits here in the header under the number -->
+      <div id="loader"></div>
+
+      <!-- Once loaded, we show the dot + text -->
+      <div class="status-info">
+        <span class="status-dot" id="statusDot" hidden></span>
+        <span class="status-text" id="statusText" hidden>…</span>
+      </div>
     </div>
   </header>
 
   <main>
-    <!-- loader a tutto schermo -->
-    <div id="loader"></div>
-
-    <!-- tutto il contenuto interattivo -->
+    <!-- everything you interact with lives here -->
     <div id="content" hidden>
       <div id="msg" class="alert" hidden></div>
 
@@ -37,13 +42,12 @@
       </div>
 
       <div id="pinGrp" hidden>
-        <input
-          id="pin"
-          type="text"
-          maxlength="6"
-          autocomplete="one-time-code"
-          data-i18n-placeholder="pinPlaceholder"
-          placeholder="Inserisci PIN">
+        <input id="pin"
+               type="text"
+               maxlength="6"
+               autocomplete="one-time-code"
+               data-i18n-placeholder="pinPlaceholder"
+               placeholder="Inserisci PIN">
         <button id="btnReg" data-i18n="registerBtn">Registra ora</button>
       </div>
 
@@ -59,7 +63,6 @@
     &copy; CanevaWorld® 2025
   </footer>
 
-  <!-- carichiamo prima ui.js, poi app.js -->
   <script src="ui.js"></script>
   <script src="app.js"></script>
 </body>
