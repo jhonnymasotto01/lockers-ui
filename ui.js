@@ -22,7 +22,7 @@ const translations = {
     apiUnreachable:  "API non raggiungibile",
     deviceRecognized:"Dispositivo riconosciuto",
     enterPin:        "Inserisci il PIN della prenotazione"
-    loading:         "Caricamento in corso"
+    loading:         "Caricamento in corso\u2026"
   },
   en: {
     appTitle:        "Locker App",
@@ -50,38 +50,44 @@ function setLang(l) {
   lang = l;
   localStorage.setItem("lang", l);
 
-  // 1) toggle pulsanti
+  // 1) evidenzio il pulsante selezionato
   id("lang-it").classList.toggle("selected", l === "it");
   id("lang-en").classList.toggle("selected", l === "en");
 
-  // 2) traduci tutti gli elementi con data-i18n
+  // 2) aggiorno tutti i testi con data-i18n
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
-    el.textContent = translations[lang][key] || el.textContent;
+    if (translations[l][key] !== undefined) {
+      el.textContent = translations[l][key];
+    }
   });
 
-  // 3) traduci tutti i placeholder
+  // 3) aggiorno tutti i placeholder con data-i18n-placeholder
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     const key = el.getAttribute("data-i18n-placeholder");
-    el.placeholder = translations[lang][key] || "";
+    if (translations[l][key] !== undefined) {
+      el.placeholder = translations[l][key];
+    }
   });
 
-  // 4) se #msg ha una data-i18n, ritraducilo
+  // 4) ritraduco anche il messaggio in #msg se ha un data-i18n
   const msgEl = id("msg");
   const msgKey = msgEl.getAttribute("data-i18n");
-  if (msgKey) {
-    msgEl.textContent = translations[lang][msgKey];
+  if (msgKey && translations[l][msgKey] !== undefined) {
+    msgEl.textContent = translations[l][msgKey];
   }
 
-  // 5) ritraduco anche lo stato Prenotato/Non prenotato
+  // 5) se ho già recuperato lo stato prenotato, ritraduco anche il bollino
   if (typeof window.currentBooked !== "undefined") {
     updateStatusDot(window.currentBooked);
   }
 }
 
-// bind degli eventi e avvio
+// bind degli eventi
 id("lang-it").addEventListener("click", () => setLang("it"));
 id("lang-en").addEventListener("click", () => setLang("en"));
+
+// lingua iniziale
 setLang(lang);
 
 // ─── funzioni di UI ─────────────────────────────────────────────────
