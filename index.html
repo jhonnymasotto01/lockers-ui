@@ -2,154 +2,43 @@
 <html lang="it">
 <head>
   <meta charset="utf-8">
-  <title data-i18n="appTitle">Locker App</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="site.css" rel="stylesheet">
-  <style>
-    body { background: #d4e4f0; }
-    header { display:flex; align-items:center; justify-content:space-between; padding:1rem; }
-    .lang-switcher button.selected { opacity:0.5; }
-    .status-dot { display:inline-block; width:0.75rem; height:0.75rem; border-radius:50%; margin-right:0.5rem; }
-    .loader { text-align:center; padding:2rem; }
-    #notBookedMessage { text-align:center; padding:1rem; }
-    #interaction .form-control { border-radius:1rem; }
-    #interaction button { border-radius:1rem; }
-    footer { text-align:center; margin:2rem 0; font-size:0.85rem; }
-  </style>
+  <title>Locker App</title>
 </head>
 <body>
-  <header>
-    <h1 data-i18n="appTitle">Locker App</h1>
-    <div>
-      <button id="lang-it">🇮🇹</button>
-      <button id="lang-en">🇬🇧</button>
-    </div>
-    <div>
-      <span data-i18n="boxLabel">Armadietto</span>
-      <strong id="titBox">?</strong>
-      <div class="status">
-        <span class="status-dot"></span>
-        <span id="statusText"></span>
-      </div>
-    </div>
-  </header>
+  <!-- messaggi di alert -->
+  <div id="msg" class="alert" hidden></div>
 
-  <main class="p-4">
-    <div id="loader" class="loader">Loading…</div>
-    <div id="notBookedMessage" hidden data-i18n="notBooked">
-      Prenota ora il tuo armadietto, segui le linee guida riportate sul totem per l'acquisto e la prenotazione
-    </div>
+  <!-- contenitore per PIN + bottone registra -->
+  <div id="pinGrp" class="mb-3" hidden>
+    <input 
+      id="pin" 
+      type="text" 
+      maxlength="6" 
+      autocomplete="one-time-code"
+      data-i18n-placeholder="pinPlaceholder"
+      placeholder="PIN">
+    <button 
+      id="btnReg" 
+      data-i18n="registerBtn">
+      Registra ora
+    </button>
+  </div>
 
-    <div id="interaction">
-      <div id="msg" class="alert rounded-pill" hidden></div>
+  <!-- bottone per aprire -->
+  <button 
+    id="btnOpen" 
+    data-i18n="openBtn" 
+    hidden>
+    Apri ora
+  </button>
 
-      <div id="pinGrp" class="input-group mb-3" hidden>
-        <input id="pin"
-               class="form-control"
-               maxlength="6"
-               autocomplete="one-time-code"
-               data-i18n-placeholder="pinPlaceholder"
-               placeholder="Inserisci PIN">
-        <button id="btnReg" class="btn btn-primary" data-i18n="registerBtn">
-          Registra ora
-        </button>
-      </div>
+  <!-- info aggiuntiva sotto i bottoni -->
+  <p id="infoText" data-i18n="infoText" hidden>
+    La registrazione avviene sul dispositivo attualmente connesso e quindi solo con tale dispositivo si potrà aprire.
+  </p>
 
-      <button id="btnOpen"
-              class="btn btn-success mb-3"
-              hidden
-              data-i18n="openBtn">
-        Apri ora
-      </button>
-
-      <p id="infoText" data-i18n="infoText">
-        La registrazione avviene sul dispositivo attualmente connesso e quindi solo con tale dispositivo si potrà aprire.
-      </p>
-    </div>
-  </main>
-
-  <footer>
-    &copy; CanevaWorld® 2025
-  </footer>
-
-  <!-- prima carica app.js, poi subito sotto tutto lo script UI -->
+  <!-- qui carichiamo il nostro app.js che inietta tutto il resto -->
   <script src="app.js"></script>
-  <script>
-  // ───── UI & i18n (da ui.js) ─────────────────────────────────────────
-  (function(){
-    const translations = {
-      it: { appTitle:"Locker App", boxLabel:"Armadietto", statusBooked:"Prenotato", statusNotBooked:"Non prenotato",
-            notBooked:"Prenota ora il tuo armadietto, segui le linee guida riportate sul totem per l'acquisto e la prenotazione",
-            pinPlaceholder:"Inserisci PIN", registerBtn:"Registra ora", openBtn:"Apri ora",
-            infoText:"La registrazione avviene sul dispositivo attualmente connesso e quindi solo con tale dispositivo si potrà aprire.",
-            apiUnreachable:"API non raggiungibile", deviceRecognized:"Dispositivo riconosciuto",
-            enterPin:"Inserisci il PIN della prenotazione" },
-      en: { appTitle:"Locker App", boxLabel:"Locker", statusBooked:"Booked", statusNotBooked:"Not booked",
-            notBooked:"Reserve now your locker – follow the guidelines on the kiosk for purchase and booking",
-            pinPlaceholder:"Enter PIN", registerBtn:"Register now", openBtn:"Open now",
-            infoText:"Registration occurs on the currently connected device, so only that device can open it.",
-            apiUnreachable:"API unreachable", deviceRecognized:"Device recognized",
-            enterPin:"Enter the booking PIN" }
-    };
-    let lang = localStorage.getItem("lang") || "it";
-    const id = x=>document.getElementById(x);
-
-    function setLang(l){
-      lang = l;
-      localStorage.setItem("lang",l);
-      document.querySelectorAll("[data-i18n]").forEach(el=>{
-        const key = el.getAttribute("data-i18n");
-        el.textContent = translations[lang][key] || el.textContent;
-      });
-      document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
-        const key = el.getAttribute("data-i18n-placeholder");
-        el.placeholder = translations[lang][key]||"";
-      });
-      // update buttons highlight
-      id("lang-it").classList.toggle("selected", lang==="it");
-      id("lang-en").classList.toggle("selected", lang==="en");
-    }
-
-    function updateStatusDot(booked){
-      const dot = document.querySelector(".status-dot");
-      const txt= id("statusText");
-      if (booked) {
-        dot.style.background = "#28a745";
-        txt.textContent = translations[lang].statusBooked;
-      } else {
-        dot.style.background = "#ffc107";
-        txt.textContent = translations[lang].statusNotBooked;
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded",()=>{
-      // lingua e testi
-      setLang(lang);
-      id("lang-it").onclick = ()=>setLang("it");
-      id("lang-en").onclick = ()=>setLang("en");
-
-      // show/hide loader e sezioni
-      id("loader").hidden           = false;
-      id("interaction").hidden      = true;
-      id("notBookedMessage").hidden = true;
-
-      // “monkey-patch” di show() di app.js
-      const origShow = window.show;
-      window.show = (type, txt) => {
-        id("loader").hidden = true;
-        if (type==="warning" && txt.includes("Box libero")){
-          id("notBookedMessage").hidden = false;
-          id("interaction").hidden      = true;
-        } else {
-          id("notBookedMessage").hidden = true;
-          id("interaction").hidden      = false;
-        }
-        if (window.updateStatus) updateStatusDot( type!=="warning" && !txt.includes("libero") );
-        return origShow(type,txt);
-      };
-    });
-  })();
-  </script>
 </body>
 </html>
