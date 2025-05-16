@@ -1,84 +1,96 @@
 /* ========== site.css ========== */
 
-/* reset/boilerplate */
-* {
-  box-sizing: border-box;
-}
+/* make body a column flex so footer sticks bottom */
 body {
-  background: #d4e4f0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   margin: 0;
   font-family: sans-serif;
+  background: #d4e4f0;
   color: #333;
 }
 
-/* ─── header & footer ───────────────────────────────────────────────── */
+/* header & footer share background & full width */
 header, footer {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 0.5rem 1rem;
-  background: #d4e4f0;           /* stesso colore del body */
-  box-shadow: none;
+  background: #d4e4f0;
 }
-header h1 {
-  margin: 0;
-  color: #001f3f;                 /* “blu notte” */
-  font-size: 1.25rem;
+
+/* center footer text */
+footer {
+  font-size: 0.85rem;
+  justify-content: center;
+  margin-top: auto;
 }
-.lang-switcher button {
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-  margin: 0 0.25rem;
-  cursor: pointer;
-  opacity: 0.5;
-}
-.lang-switcher button.selected {
-  opacity: 1;
-}
+
+/* ── HEADER STATUS COLUMN ───────────────────────────────── */
 .status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* loader spinner in header */
+#loader {
+  width: 2rem;
+  height: 2rem;
+  border: 0.3rem solid #ccc;
+  border-top-color: #001f3f;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* hide loader by default; ui.js will toggle the hidden attribute */
+#loader[hidden] {
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* after loading, we show these */
+.status-info {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.9rem;
 }
+
 .status-dot {
   width: 0.75rem;
   height: 0.75rem;
   border-radius: 50%;
   display: inline-block;
 }
+
 .status-text {
   font-weight: bold;
 }
 
-/* ─── loader ─────────────────────────────────────────────────────────── */
-#loader {
-  width: 3rem;
-  height: 3rem;
-  border: 0.5rem solid #ccc;
-  border-top: 0.5rem solid #001f3f;
-  border-radius: 50%;
-  margin: 4rem auto;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ─── main ───────────────────────────────────────────────────────────── */
+/* ── MAIN CONTENT AREA ─────────────────────────────────────────── */
 main {
+  flex: 1;  /* push footer to bottom */
   padding: 1rem;
 }
+
+#content[hidden] {
+  display: none;
+}
+
+/* central message when not booked */
 #notBookedMessage {
   text-align: center;
   margin: 2rem 0;
   font-size: 1rem;
 }
 
-/* ─── form & bottoni ─────────────────────────────────────────────────── */
+/* ── FORM & BUTTONS ────────────────────────────────────────────── */
 #pin {
-  display: block;
   width: 100%;
   padding: 0.5rem;
   font-size: 1rem;
@@ -86,9 +98,9 @@ main {
   border: 1px solid #ccc;
   margin-bottom: 1rem;
 }
+
 #btnReg,
 #btnOpen {
-  display: block;
   width: 100%;
   padding: 0.75rem;
   font-size: 1rem;
@@ -97,34 +109,30 @@ main {
   color: #fff;
   border-radius: 1rem;
   cursor: pointer;
-  transition: opacity .2s ease;
   margin-bottom: 1rem;
+  transition: opacity .2s ease;
 }
+
 #btnReg:hover,
 #btnOpen:hover {
   opacity: 0.9;
 }
 
-/* ─── messaggi (alert) ───────────────────────────────────────────────── */
+/* ── ALERT MESSAGES ─────────────────────────────────────────────── */
 .alert {
   padding: 0.75rem 1rem;
   border-radius: 1rem;
   margin-bottom: 1rem;
-  display: block;
 }
+
 .alert-danger  { background: #f8d7da; color: #721c24; }
 .alert-warning { background: #fff3cd; color: #856404; }
 .alert-info    { background: #d1ecf1; color: #0c5460; }
 .alert-success { background: #d4edda; color: #155724; }
 
-/* ─── info sotto i bottoni ───────────────────────────────────────────── */
+/* ── INFO TEXT ─────────────────────────────────────────────────── */
 #infoText {
   font-size: 0.9rem;
   color: #333;
   margin-top: 0.5rem;
-}
-
-/* ─── footer testo ───────────────────────────────────────────────────── */
-footer {
-  font-size: 0.85rem;
 }
