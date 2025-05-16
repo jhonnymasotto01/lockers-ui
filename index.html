@@ -25,35 +25,41 @@
   </header>
 
   <main>
-    <div id="msg" class="alert" hidden></div>
+    <!-- loader a tutto schermo -->
+    <div id="loader"></div>
 
-    <div id="notBookedMessage" hidden data-i18n="notBooked">
-      Prenota ora il tuo armadietto, segui le linee guida riportate sul totem per l'acquisto e la prenotazione
+    <!-- tutto il contenuto interattivo -->
+    <div id="content" hidden>
+      <div id="msg" class="alert" hidden></div>
+
+      <div id="notBookedMessage" hidden data-i18n="notBooked">
+        Prenota ora il tuo armadietto, segui le linee guida riportate sul totem per l'acquisto e la prenotazione
+      </div>
+
+      <div id="pinGrp" hidden>
+        <input
+          id="pin"
+          type="text"
+          maxlength="6"
+          autocomplete="one-time-code"
+          data-i18n-placeholder="pinPlaceholder"
+          placeholder="Inserisci PIN">
+        <button id="btnReg" data-i18n="registerBtn">Registra ora</button>
+      </div>
+
+      <button id="btnOpen" hidden data-i18n="openBtn">Apri ora</button>
+
+      <p id="infoText" hidden data-i18n="infoText">
+        La registrazione avviene sul dispositivo attualmente connesso e quindi solo con tale dispositivo si potrà aprire.
+      </p>
     </div>
-
-    <div id="pinGrp" hidden>
-      <input
-        id="pin"
-        type="text"
-        maxlength="6"
-        autocomplete="one-time-code"
-        data-i18n-placeholder="pinPlaceholder"
-        placeholder="Inserisci PIN">
-      <button id="btnReg" data-i18n="registerBtn">Registra ora</button>
-    </div>
-
-    <button id="btnOpen" hidden data-i18n="openBtn">Apri ora</button>
-
-    <p id="infoText" hidden data-i18n="infoText">
-      La registrazione avviene sul dispositivo attualmente connesso e quindi solo con tale dispositivo si potrà aprire.
-    </p>
   </main>
 
   <footer>
     &copy; CanevaWorld® 2025
   </footer>
 
-  <!-- prima carichiamo ui.js, poi app.js -->
+  <!-- carichiamo prima ui.js, poi app.js -->
   <script src="ui.js"></script>
   <script src="app.js"></script>
 </body>
