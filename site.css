@@ -136,3 +136,29 @@ main {
   color: #333;
   margin-top: 0.5rem;
 }
+
+/* 1) Messaggi (#msg): testo centrato e nessun background */
+#msg {
+  background: transparent !important;
+  text-align: center;
+  padding: 0.5rem 0;      /* se vuoi mantenere un po' di spazio */
+  color: inherit;         /* usa il colore di default del testo */
+}
+
+/* 2) Titolo responsive su smartphone */
+@media (max-width: 576px) {
+  header h1 {
+    font-size: 1rem;      /* riduci la dimensione su dispositivi piccoli */
+  }
+}
+
+/* 3) Limita la larghezza di input e bottoni e centrarli */
+#pin,
+#btnReg,
+#btnOpen {
+  max-width: 300px;       /* o quello che ti sembra più comodo */
+  width: 100%;            /* si ridimensionano fino al max-width */
+  margin-left: auto;
+  margin-right: auto;
+}
+
