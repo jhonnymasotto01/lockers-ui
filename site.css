@@ -1,110 +1,115 @@
+/* site.css */
+
 :root {
-  --bg-color:    #d4e4f0;
-  --night-blue:  #001f3f;
-  --green-dot:   #28a745;
-  --yellow-dot:  #ffc107;
+  --bg-color:      #d4e4f0;
+  --header-color:  #0a1e3b;
+  --green-dot:     #28a745;
+  --yellow-dot:    #ffc107;
 }
 
-/* Layout generale */
-html, body {
-  margin: 0; padding: 0;
-  height: 100%;
-}
+/* body & layout */
 body {
+  margin: 0;
+  font-family: sans-serif;
+  background: var(--bg-color);
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-color);
-  font-family: sans-serif;
+  min-height: 100vh;
 }
-header, footer {
-  flex: 0 0 auto;
-}
-main {
-  flex: 1 0 auto;
-}
-
-/* Header */
 header {
-  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-.app-title {
-  color: var(--night-blue);
-  font-size: 1.5rem;
+header .app-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--header-color);
+  flex: 1;
+}
+header .lang-switch {
+  display: flex;
+  gap: 0.5rem;
 }
 .lang-btn {
   background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 .lang-btn.selected {
   opacity: 1;
 }
-.box-title {
-  font-size: 1.25rem;
-}
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+header .box-status {
+  text-align: right;
   font-size: 0.9rem;
 }
 .status-dot {
-  width: 0.75rem; height: 0.75rem;
-  border-radius: 50%;
   display: inline-block;
-  background-color: var(--green-dot);
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  margin-right: 0.25rem;
+  vertical-align: middle;
 }
 
-/* Messaggio non prenotato */
-#notBookedMessage p {
-  font-size: 1.1rem;
-  max-width: 300px;
-  margin: auto;
+main {
+  flex: 1;
+  padding: 1rem;
 }
-
-/* Interazione */
+.loader {
+  text-align: center;
+  font-size: 1rem;
+  padding: 2rem 0;
+}
+.not-booked {
+  text-align: center;
+  font-size: 1rem;
+  margin: 2rem 0;
+}
 #interaction {
-  max-width: 320px;
+  text-align: center;
 }
-.pin-input {
-  max-width: 100px;
+#msg {
+  max-width: 300px;
+  margin: 0 auto 1rem;
+  border-radius: 0.5rem;
 }
-.primary-btn {
-  background-color: var(--night-blue);
-  color: white;
-  border: none;
-}
-.success-btn {
-  background-color: var(--green-dot);
-  color: white;
-  border: none;
-}
-
-/* Loader */
-#loader {
+.pin-group {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
   margin-bottom: 1rem;
 }
+.pin-group input {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  width: 120px;
+  text-align: center;
+}
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+#btnReg { background: #007bff; color: white; }
+#btnOpen { background: #28a745; color: white; }
+.info-text {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 1rem;
+}
 
-/* Footer */
 footer {
-  opacity: 0.7;
+  text-align: center;
+  padding: 0.75rem;
+  font-size: 0.8rem;
+  background: white;
 }
-
-/* Responsive */
-@media (max-width: 576px) {
-  .app-title { font-size: 1.25rem; }
-  .box-title { font-size: 1rem; }
-  header {
-    flex-wrap: wrap;
-    text-align: center;
-    gap: 0.5rem;
-  }
-}
-
-/* ® piccolo */
-.registered {
-  font-size: 0.75rem;
-}
-
