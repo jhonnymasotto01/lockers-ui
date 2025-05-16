@@ -101,6 +101,10 @@ window.currentBooked = stateResp.booked;
   // 2) REGISTER
   // ───────────────────────────────────────────────────────────────
   async function onRegister(){
+  // resetto eventuali messaggi precedenti e mostro il caricamento
+  resetAlerts();
+  show("info", "loading");
+
     const pin = elPin.value.trim();
     if (!pin) return alert("Inserisci il PIN");
 
