@@ -21,101 +21,97 @@ if (!box) {
 bReg .onclick = onRegister;
 bOpen.onclick = onOpen;
 
-/* ───────────────────────────────────────────────── init ───────────────────────────────────────────────── */
+/* ───────────────────────────────────────── init ───────────────────────────────────────── */
 async function init(){
+  // 1) /state
   let stateResp;
   try {
-    const res = await fetch(`${API}/state?box=${box}`);
-    const data = await res.json();
-    if (!res.ok) {
-      // Errore custom dal Worker o 4xx/5xx
-      return show("danger", data.msg || `Errore server (${res.status})`);
-    }
-    stateResp = data;
+    const res  = await fetch(`${API}/state?box=${box}`);
+    stateResp = await res.json();
+    if (!res.ok) throw new Error(stateResp.msg || `Errore ${res.status}`);
   } catch (e) {
-    return show("danger","API non raggiungibile");
+    return show("danger", e.message === "Failed to fetch" ? "API non raggiungibile" : e.message);
   }
 
-  // Se non è prenotato, fermiamoci qui
+  // 2) Se non è prenotato
   if (!stateResp.booked) {
     return show("warning","Box libero, nessuna prenotazione.");
   }
 
-  // Altrimenti verifico subito se il device è già registrato (dry-run)
-  const me = navigator.userAgent;
+  // 3) Dry-run per vedere se il device è già registrato
+  let dry;
   try {
-    const res = await fetch(
-      `${API}/open?box=${box}&device=${encodeURIComponent(me)}&dry=1`
+    const resp = await fetch(
+      `${API}/open?box=${box}&device=${encodeURIComponent(navigator.userAgent)}&dry=1`
     );
-    if (res.ok) {
-      // già registrato
-      show("success","Dispositivo riconosciuto");
-      bOpen.hidden = false;
-    } else if (res.status === 403) {
-      // non registrato → mostro il campo PIN
-      grp.hidden = false;
-      show("info","Inserisci il PIN della prenotazione");
-    } else {
-      // ogni altro errore
-      const err = await res.json().catch(()=>({msg:`Errore server (${res.status})`}));
-      show("danger", err.msg);
-    }
-  } catch (e) {
-    show("danger","API non raggiungibile");
+    dry = await resp.json();
+  } catch (_) {
+    return show("danger","API non raggiungibile");
+  }
+
+  if (dry.ok) {
+    // già registrato
+    show("success","Dispositivo riconosciuto");
+    bOpen.hidden = false;
+  } else {
+    // non registrato → mostro il PIN
+    grp.hidden = false;
+    show("info", dry.msg || "Inserisci il PIN della prenotazione");
   }
 }
 
-/* ─────────────────────────────────────────────── register ───────────────────────────────────────────── */
+/* ──────────────────────────────────────── register ──────────────────────────────────────── */
 async function onRegister(){
-  const pincode = elPin.value.trim();
-  if (!pincode) {
-    return alert("Inserisci il PIN");
-  }
+  const pin = elPin.value.trim();
+  if (!pin) return alert("Inserisci il PIN");
 
-  const payload = {
-    box: +box,
-    pincode,
-    device: navigator.userAgent
-  };
-
+  let reg;
   try {
-    const res = await fetch(`${API}/register`, {
+    const resp = await fetch(`${API}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        box: +box,
+        pincode: pin,
+        device: navigator.userAgent
+      })
     });
-    const data = await res.json();
-    if (!res.ok) {
-      return show("danger", data.msg || `Errore server (${res.status})`);
-    }
-    // OK!
-    show("success", data.msg);
-    grp.hidden = true;
-    bOpen.hidden = false;
-  } catch (e) {
-    show("danger","API non raggiungibile");
+    reg = await resp.json();
+  } catch (_) {
+    return show("danger","API non raggiungibile");
   }
+
+  if (!reg.ok) {
+    // PIN errato o altro
+    return show("danger", reg.msg || "Errore durante la registrazione");
+  }
+
+  // OK!
+  show("success", reg.msg);
+  grp.hidden  = true;
+  bOpen.hidden = false;
 }
 
-/* ─────────────────────────────────────────────── open ──────────────────────────────────────────────── */
+/* ────────────────────────────────────────── open ───────────────────────────────────────── */
 async function onOpen(){
-  const me = navigator.userAgent;
+  let op;
   try {
-    const res = await fetch(
-      `${API}/open?box=${box}&device=${encodeURIComponent(me)}`
+    const resp = await fetch(
+      `${API}/open?box=${box}&device=${encodeURIComponent(navigator.userAgent)}`
     );
-    const data = await res.json();
-    if (!res.ok) {
-      return show("danger", data.msg || `Errore server (${res.status})`);
-    }
-    // porta aperta!
-    show("success", data.msg);
-  } catch (e) {
-    show("danger","API non raggiungibile");
+    op = await resp.json();
+  } catch (_) {
+    return show("danger","API non raggiungibile");
   }
+
+  if (!op.ok) {
+    return show("danger", op.msg || "Errore durante l’apertura");
+  }
+
+  show("success", op.msg);
 }
 
-/* ───────────────────────────────────────────────── helpers ───────────────────────────────────────────────── */
+/* ───────────────────────────────────────── helpers ───────────────────────────────────────── */
 function show(type, txt){
   elMsg.className   = `alert alert-${type}`;
   elMsg.textContent = txt;
