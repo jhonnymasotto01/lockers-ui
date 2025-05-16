@@ -68,7 +68,7 @@
 
     // b) update header dot/text
     updateStatusDot(stateResp.booked);
-
+window.currentBooked = stateResp.booked;
     // c) not booked?
     if (!stateResp.booked) {
       hideLoader();
