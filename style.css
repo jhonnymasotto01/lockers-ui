@@ -1,5 +1,110 @@
-body{font-family:sans-serif;max-width:400px;margin:3rem auto;text-align:center}
-input{font-size:1.2rem;padding:.4rem;width:100%;box-sizing:border-box}
-button{margin-top:1rem;padding:.6rem 1.2rem;font-size:1rem}
-.err{color:#e74c3c;margin-top:.5rem}
-.ok {color:#2ecc71;margin-top:.5rem}
+:root {
+  --bg-color:    #d4e4f0;
+  --night-blue:  #001f3f;
+  --green-dot:   #28a745;
+  --yellow-dot:  #ffc107;
+}
+
+/* Layout generale */
+html, body {
+  margin: 0; padding: 0;
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color);
+  font-family: sans-serif;
+}
+header, footer {
+  flex: 0 0 auto;
+}
+main {
+  flex: 1 0 auto;
+}
+
+/* Header */
+header {
+  background: transparent;
+}
+.app-title {
+  color: var(--night-blue);
+  font-size: 1.5rem;
+}
+.lang-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  opacity: 0.6;
+}
+.lang-btn.selected {
+  opacity: 1;
+}
+.box-title {
+  font-size: 1.25rem;
+}
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+.status-dot {
+  width: 0.75rem; height: 0.75rem;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: var(--green-dot);
+}
+
+/* Messaggio non prenotato */
+#notBookedMessage p {
+  font-size: 1.1rem;
+  max-width: 300px;
+  margin: auto;
+}
+
+/* Interazione */
+#interaction {
+  max-width: 320px;
+}
+.pin-input {
+  max-width: 100px;
+}
+.primary-btn {
+  background-color: var(--night-blue);
+  color: white;
+  border: none;
+}
+.success-btn {
+  background-color: var(--green-dot);
+  color: white;
+  border: none;
+}
+
+/* Loader */
+#loader {
+  margin-bottom: 1rem;
+}
+
+/* Footer */
+footer {
+  opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .app-title { font-size: 1.25rem; }
+  .box-title { font-size: 1rem; }
+  header {
+    flex-wrap: wrap;
+    text-align: center;
+    gap: 0.5rem;
+  }
+}
+
+/* ® piccolo */
+.registered {
+  font-size: 0.75rem;
+}
+
