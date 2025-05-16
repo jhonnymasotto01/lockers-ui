@@ -48,40 +48,38 @@ function setLang(l) {
   lang = l;
   localStorage.setItem("lang", l);
 
-  // evidenzio il pulsante selezionato
+  // 1) toggle pulsanti
   id("lang-it").classList.toggle("selected", l === "it");
   id("lang-en").classList.toggle("selected", l === "en");
 
-  // ritraggo tutti i testi con data-i18n
+  // 2) traduci tutti gli elementi con data-i18n
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
     el.textContent = translations[lang][key] || el.textContent;
   });
 
-  // ritraggo tutti i placeholder
+  // 3) traduci tutti i placeholder
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     const key = el.getAttribute("data-i18n-placeholder");
     el.placeholder = translations[lang][key] || "";
   });
 
-  // ritraduco anche il div#msg se ha una data-i18n
+  // 4) se #msg ha una data-i18n, ritraducilo
   const msgEl = id("msg");
   const msgKey = msgEl.getAttribute("data-i18n");
   if (msgKey) {
     msgEl.textContent = translations[lang][msgKey];
   }
 
-  // ritraduco il bollino Prenotato/Non prenotato
+  // 5) ritraduco anche lo stato Prenotato/Non prenotato
   if (typeof window.currentBooked !== "undefined") {
     updateStatusDot(window.currentBooked);
   }
 }
 
-// bind degli eventi
+// bind degli eventi e avvio
 id("lang-it").addEventListener("click", () => setLang("it"));
 id("lang-en").addEventListener("click", () => setLang("en"));
-
-// lingua iniziale
 setLang(lang);
 
 // ─── funzioni di UI ─────────────────────────────────────────────────
