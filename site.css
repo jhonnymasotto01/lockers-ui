@@ -1,115 +1,120 @@
-/* site.css */
+/* ========== site.css ========== */
 
-:root {
-  --bg-color:      #d4e4f0;
-  --header-color:  #0a1e3b;
-  --green-dot:     #28a745;
-  --yellow-dot:    #ffc107;
+/* reset/boilerplate */
+* {
+  box-sizing: border-box;
 }
-
-/* body & layout */
 body {
+  background: #d4e4f0;
   margin: 0;
   font-family: sans-serif;
-  background: var(--bg-color);
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  color: #333;
 }
+
+/* ─── header ─────────────────────────────────────────────────────────── */
 header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1rem;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
-header .app-title {
+header h1 {
   margin: 0;
+  color: #001f3f;        /* “blu notte” */
   font-size: 1.25rem;
-  color: var(--header-color);
-  flex: 1;
 }
-header .lang-switch {
-  display: flex;
-  gap: 0.5rem;
-}
-.lang-btn {
+.lang-switcher button {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
+  margin: 0 0.25rem;
   cursor: pointer;
   opacity: 0.5;
 }
-.lang-btn.selected {
+.lang-switcher button.selected {
   opacity: 1;
 }
-header .box-status {
-  text-align: right;
+.status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.9rem;
 }
 .status-dot {
-  display: inline-block;
   width: 0.75rem;
   height: 0.75rem;
   border-radius: 50%;
-  margin-right: 0.25rem;
-  vertical-align: middle;
+  display: inline-block;
+}
+.status-text {
+  font-weight: bold;
 }
 
+/* ─── main ───────────────────────────────────────────────────────────── */
 main {
-  flex: 1;
   padding: 1rem;
 }
-.loader {
+#notBookedMessage {
   text-align: center;
-  font-size: 1rem;
-  padding: 2rem 0;
-}
-.not-booked {
-  text-align: center;
-  font-size: 1rem;
   margin: 2rem 0;
-}
-#interaction {
-  text-align: center;
-}
-#msg {
-  max-width: 300px;
-  margin: 0 auto 1rem;
-  border-radius: 0.5rem;
-}
-.pin-group {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-.pin-group input {
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  border: 1px solid #ccc;
-  width: 120px;
-  text-align: center;
-}
-.btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
   font-size: 1rem;
-}
-#btnReg { background: #007bff; color: white; }
-#btnOpen { background: #28a745; color: white; }
-.info-text {
-  font-size: 0.85rem;
-  color: #555;
-  margin-top: 1rem;
 }
 
+/* ─── form & bottoni ─────────────────────────────────────────────────── */
+#pin {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #ccc;
+  margin-bottom: 1rem;
+}
+#btnReg,
+#btnOpen {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: none;
+  background: #001f3f;
+  color: #fff;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: opacity .2s ease;
+  margin-bottom: 1rem;
+}
+#btnReg:hover,
+#btnOpen:hover {
+  opacity: 0.9;
+}
+
+/* ─── messaggi (alert) ───────────────────────────────────────────────── */
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+.alert-danger  { background: #f8d7da; color: #721c24; }
+.alert-warning { background: #fff3cd; color: #856404; }
+.alert-info    { background: #d1ecf1; color: #0c5460; }
+.alert-success { background: #d4edda; color: #155724; }
+
+/* ─── info sotto i bottoni ───────────────────────────────────────────── */
+#infoText {
+  font-size: 0.9rem;
+  color: #333;
+  margin-top: 0.5rem;
+}
+
+/* ─── footer ─────────────────────────────────────────────────────────── */
 footer {
   text-align: center;
-  padding: 0.75rem;
-  font-size: 0.8rem;
-  background: white;
+  padding: 1rem;
+  font-size: 0.85rem;
+  background: #fff;
+  margin-top: 2rem;
 }
