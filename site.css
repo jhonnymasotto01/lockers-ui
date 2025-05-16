@@ -11,6 +11,15 @@ body {
   color: #333;
 }
 
+/* ─── WRAPPER DEL CONTENUTO ───────────────────────────────────────────── */
+#content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;           /* vincolo larghezza per non allungare troppo */
+}
+
 /* header & footer share background & full width */
 header, footer {
   display: flex;
@@ -75,6 +84,10 @@ footer {
 /* ── MAIN CONTENT AREA ─────────────────────────────────────────── */
 main {
   flex: 1;  /* push footer to bottom */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    /* centro verticale */
+  align-items: center;        /* centro orizzontale */
   padding: 1rem;
 }
 
