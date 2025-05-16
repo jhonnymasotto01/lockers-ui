@@ -102,13 +102,23 @@ function hideLoader() {
   id("content").hidden     = false;
 }
 
-// messaggi di stato
+// ─── messaggi di stato ─────────────────────────────────────────────────
 function show(type, keyOrMsg) {
   const el = id("msg");
+  // css
   el.className   = `alert alert-${type} rounded-pill`;
+  // se è una nostra chiave di traduzione la metto come data-i18n,
+  // altrimenti la tolgo (es. messaggi dall'API)
+  if (translations[lang][keyOrMsg] !== undefined) {
+    el.setAttribute("data-i18n", keyOrMsg);
+  } else {
+    el.removeAttribute("data-i18n");
+  }
+  // testo (sia tradotto che letterale)
   el.textContent = translations[lang][keyOrMsg] || keyOrMsg;
   el.hidden      = false;
 }
+
 // aggiorna bollino + testo "Prenotato"/"Non prenotato"
 function updateStatusDot(booked) {
   const dot = id("statusDot");
