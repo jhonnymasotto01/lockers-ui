@@ -22,9 +22,8 @@ async function getDeviceId() {
     get.onsuccess = () => {
       let id = get.result;
       if (!id) {
-        // UUIDv4 semplice
         id = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c/4).toString(16)
         );
         store.put(id, 'deviceId');
       }
@@ -40,8 +39,8 @@ async function getDeviceId() {
   // IMPORT UI FUNCTIONS (from ui.js)
   // ───────────────────────────────────────────────────────────────
   const {
-    show,
-    updateStatusDot,
+    show,               // per messaggi nel #msg
+    updateStatusDot,    // per header dot + testo
     showNotBooked,
     showInteraction,
     showRegisteredUI,
@@ -52,40 +51,47 @@ async function getDeviceId() {
   // CONFIG & HELPERS
   // ───────────────────────────────────────────────────────────────
   const API = "https://lockers-api.cqc2qfkwcw.workers.dev";
-  function id(x){ return document.getElementById(x); }
+  const id  = x => document.getElementById(x);
+
+  function showHeaderLoader() {
+    id("loader").hidden = false;
+    id("statusDot").hidden = true;
+    id("statusText").hidden = true;
+  }
+  function hideHeaderLoader() {
+    id("loader").hidden = true;
+    id("statusDot").hidden = false;
+    id("statusText").hidden = false;
+  }
 
   // ───────────────────────────────────────────────────────────────
   // DOM REFS & PARAMS
   // ───────────────────────────────────────────────────────────────
-  const url   = new URL(location.href);
-  const box   = url.searchParams.get("box");
+  const url = new URL(location.href);
+  const box = url.searchParams.get("box");
   id("titBox").textContent = box || "?";
 
-  const elMsg = id("msg"),
-        elPin = id("pin"),
-        grp   = id("pinGrp"),
+  const elPin = id("pin"),
         bReg  = id("btnReg"),
+        // #btnOpen è lanciato dalla modale
         bOpen = id("btnOpen");
 
-  // bind register only; open è gestito dalla modale in ui.js
   bReg.onclick = onRegister;
 
-  // START: verifica parametro box
   if (!box) {
     show("danger", "Parametro ?box mancante");
     return;
   }
 
-  // genera o recupera deviceId e avvia INIT
   const deviceId = await getDeviceId();
   init();
 
   // ───────────────────────────────────────────────────────────────
-  // 1) INIT: STATE → REGISTERED? → INTERACTION UI
+  // 1) INIT: controllo stato → UI header + UI content
   // ───────────────────────────────────────────────────────────────
-  async function init(){
+  async function init() {
     resetAlerts();
-    show("info", "loading");
+    showHeaderLoader();
 
     let stateResp;
     try {
@@ -93,9 +99,11 @@ async function getDeviceId() {
       stateResp = await res.json();
       if (!res.ok) throw new Error(stateResp.msg || `Errore ${res.status}`);
     } catch (e) {
+      hideHeaderLoader();
       return show("danger", e.message === "Failed to fetch" ? "apiUnreachable" : e.message);
     }
 
+    hideHeaderLoader();
     updateStatusDot(stateResp.booked);
     window.currentBooked = stateResp.booked;
 
@@ -103,7 +111,7 @@ async function getDeviceId() {
       return showNotBooked();
     }
 
-    // dry-run per verificare registrazione dispositivo
+    // dry-run per vedere se già registrato
     resetAlerts();
     show("info", "loading");
 
@@ -129,7 +137,7 @@ async function getDeviceId() {
   // ───────────────────────────────────────────────────────────────
   // 2) REGISTER
   // ───────────────────────────────────────────────────────────────
-  async function onRegister(){
+  async function onRegister() {
     resetAlerts();
     show("info", "loading");
 
@@ -140,12 +148,12 @@ async function getDeviceId() {
 
     let reg;
     try {
-      const response = await fetch(`${API}/register`, {
+      const r = await fetch(`${API}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ box: +box, pincode: pin, device: deviceId })
+        body: JSON.stringify({ box:+box, pincode:pin, device:deviceId })
       });
-      reg = await response.json();
+      reg = await r.json();
     } catch (_) {
       return show("danger", "apiUnreachable");
     }
@@ -160,16 +168,16 @@ async function getDeviceId() {
   // ───────────────────────────────────────────────────────────────
   // 3) OPEN
   // ───────────────────────────────────────────────────────────────
-  async function onOpen(){
+  async function onOpen() {
     resetAlerts();
     show("info", "loading");
 
     let op;
     try {
-      const response = await fetch(
+      const r = await fetch(
         `${API}/open?box=${box}&device=${encodeURIComponent(deviceId)}`
       );
-      op = await response.json();
+      op = await r.json();
     } catch (_) {
       return show("danger", "apiUnreachable");
     }
@@ -180,6 +188,7 @@ async function getDeviceId() {
     show("success", "openSuccess");
   }
 
-  // esponi onOpen per il bottone Apri della modale
+  // esponi onOpen per il bottone della modale
   window.ui.confirmOpen = onOpen;
+
 })();
