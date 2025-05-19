@@ -162,8 +162,9 @@ main {
 
 /* override solo per il messaggio in #msg: nessun pill-shape, nessun background */
 #msg.alert {
-  background: transparent !important;
-  border-radius: 0 !important;
+  background: transparent !important;   /* niente sfondo */
+  border: none !important;              /* niente bordo */
+  border-radius: 0 !important;          /* niente arrotondamenti */
   padding: 0.5rem 0 !important; /* un po’ di spazio verticale */
   color: inherit !important;
 }
