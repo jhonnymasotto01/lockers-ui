@@ -21,8 +21,10 @@ const translations = {
     apiUnreachable:   "API non raggiungibile",
     deviceRecognized: "Dispositivo riconosciuto",
     enterPin:         "Inserisci il PIN della prenotazione",
-    loading:          "loading",       // key only
-    // modale conferma apertura
+    loading:          "loading",             // usato come chiave per il loader a puntini
+    deviceRegistered: "Dispositivo registrato",
+    openSuccess:      "Azione completata",
+    incognitoWarn:    "Non usare modalità incognito",
     openConfirmTitle: "Conferma apertura",
     openConfirmBody:  "Sei sicuro di voler aprire l’armadietto adesso?",
     confirmBtn:       "Apri",
@@ -40,9 +42,11 @@ const translations = {
     infoText:         "Registration occurs on the currently connected device, so only that device can open it.",
     apiUnreachable:   "API unreachable",
     deviceRecognized: "Device recognized",
-    enterPin:         "Enter the booking PIN",
+    enterPin:         "Enter booking PIN",
     loading:          "loading",
-    // modal confirmation
+    deviceRegistered: "Device registered",
+    openSuccess:      "Action completed",
+    incognitoWarn:    "Do not use incognito mode",
     openConfirmTitle: "Confirm open",
     openConfirmBody:  "Are you sure you want to open the locker now?",
     confirmBtn:       "Open",
@@ -62,63 +66,69 @@ function setLang(l) {
   id("lang-it").classList.toggle("selected", l === "it");
   id("lang-en").classList.toggle("selected", l === "en");
 
-  // traduci tutti gli elementi con data-i18n
+  // traduci testo e placeholder
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
     el.textContent = translations[l][key] || el.textContent;
   });
-
-  // traduci tutti i placeholder
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     const key = el.getAttribute("data-i18n-placeholder");
     el.placeholder = translations[l][key] || "";
   });
 
-  // traduci il contenuto della modale
+  // modale
   id("confirmOpenLabel").textContent = translations[l].openConfirmTitle;
   id("confirmOpenModal").querySelector(".modal-body").textContent = translations[l].openConfirmBody;
   id("confirmOpenBtn").textContent = translations[l].confirmBtn;
   id("confirmOpenModal").querySelector(".btn-secondary").textContent = translations[l].cancelBtn;
 
-  // se #msg ha un data-i18n, ritraslo
+  // avviso incognito (sempre visibile)
+  id("incognitoWarning").textContent = translations[l].incognitoWarn;
+
+  // eventuale messaggio già mostrato (eccetto loading)
   const msgEl = id("msg");
   const msgKey = msgEl.getAttribute("data-i18n");
-  if (msgKey && msgKey !== 'loading') {
+  if (msgKey && msgKey !== "loading") {
     msgEl.textContent = translations[l][msgKey] || msgEl.textContent;
   }
 
-  // aggiorna anche "Prenotato/Non prenotato"
+  // aggiorna dot header
   if (typeof window.currentBooked !== "undefined") {
     window.ui.updateStatusDot(window.currentBooked);
   }
 }
 
 // bind dei pulsanti lingua e init
-id("lang-it").addEventListener(() => setLang("it"));
-id("lang-en").addEventListener(() => setLang("en"));
+id("lang-it").addEventListener("click", () => setLang("it"));
+id("lang-en").addEventListener("click", () => setLang("en"));
 setLang(lang);
 
-// ─── funzioni di UI esposte ad app.js ─────────────────────────────────
-function showLoader() {
-  const msgEl = id("msg");
-  msgEl.innerHTML = `<div class=\"dots\"><div></div><div></div><div></div></div>`;
-  msgEl.className = `alert alert-info rounded-pill text-center`;
-  msgEl.hidden = false;
-}
-
-function hideLoader() {
-  const msgEl = id("msg");
-  msgEl.hidden = true;
-  msgEl.innerHTML = '';
-}
-
-function show(type, keyOrMsg) {
-  // se è loading, usa showLoader()
-  if (keyOrMsg === 'loading') {
-    return showLoader();
-  }
+// ─── loader a puntini dentro #msg ────────────────────────────────────
+function showLoaderInMsg() {
   const el = id("msg");
-  el.innerHTML = '';
+  el.className = "alert alert-info rounded-pill text-center";
+  el.innerHTML = `
+    <div class="dots">
+      <div></div><div></div><div></div>
+    </div>
+  `;
+  el.hidden = false;
+}
+
+function hideLoaderInMsg() {
+  const el = id("msg");
+  el.hidden    = true;
+  el.innerHTML = "";
+}
+
+// ─── mostra messaggi (incluso loading) ───────────────────────────────
+function show(type, keyOrMsg) {
+  if (keyOrMsg === "loading") {
+    showLoaderInMsg();
+    return;
+  }
+  hideLoaderInMsg();
+  const el = id("msg");
   if (translations[lang][keyOrMsg] !== undefined) {
     el.setAttribute("data-i18n", keyOrMsg);
     el.textContent = translations[lang][keyOrMsg];
@@ -130,6 +140,7 @@ function show(type, keyOrMsg) {
   el.hidden    = false;
 }
 
+// ─── stato header ───────────────────────────────────────────────────
 function updateStatusDot(booked) {
   const dot = id("statusDot");
   dot.style.background = booked ? "#28a745" : "#ffc107";
@@ -139,34 +150,30 @@ function updateStatusDot(booked) {
       : translations[lang].statusNotBooked;
 }
 
+// ─── interazione UI ─────────────────────────────────────────────────
 function showNotBooked() {
   id("notBookedMessage").hidden = false;
   id("pinGrp").hidden           = true;
   id("btnOpen").hidden          = true;
   id("infoText").hidden         = true;
 }
-
 function showInteraction() {
   id("notBookedMessage").hidden = true;
   id("pinGrp").hidden           = false;
   id("btnOpen").hidden          = true;
   id("infoText").hidden         = false;
 }
-
 function showRegisteredUI() {
   id("notBookedMessage").hidden = true;
   id("pinGrp").hidden           = true;
   id("btnOpen").hidden          = false;
   id("infoText").hidden         = false;
 }
-
 function resetAlerts() {
-  const msgEl = id("msg");
-  msgEl.hidden = true;
-  msgEl.innerHTML = '';
+  hideLoaderInMsg();
 }
 
-// --- setup della modale di conferma apertura ---
+// ─── setup della modale di conferma apertura ─────────────────────────
 (function setupModalHandlers(){
   const openBtn    = id("btnOpen");
   const confirmBtn = id("confirmOpenBtn");
@@ -175,23 +182,19 @@ function resetAlerts() {
   openBtn.addEventListener("click", e => {
     e.preventDefault();
     setLang(lang);
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
+    new bootstrap.Modal(modalEl).show();
   });
 
   confirmBtn.addEventListener("click", () => {
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    modal.hide();
+    bootstrap.Modal.getInstance(modalEl).hide();
     window.ui.confirmOpen();
   });
 })();
 
-// espongo tutto in window.ui prima di caricare app.js
+// ─── esportazioni per app.js ─────────────────────────────────────────
 window.ui = {
   show,
   updateStatusDot,
-  showLoader,
-  hideLoader,
   showNotBooked,
   showInteraction,
   showRegisteredUI,
