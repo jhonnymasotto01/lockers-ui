@@ -22,7 +22,7 @@ async function getDeviceId() {
     get.onsuccess = () => {
       let id = get.result;
       if (!id) {
-        // Genera semplice UUIDv4
+        // Genera UUIDv4
         id = ([1e7]+-1e3+-4e3+-8e3+-1e11)
           .replace(/[018]/g, c =>
             (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c/4)
@@ -38,24 +38,20 @@ async function getDeviceId() {
 // --- fine IndexedDB helper ---
 
 ;(async function(){
-  // ───────────────────────────────────────────────────────────────
   // IMPORT UI FUNCTIONS (from ui.js)
-  // ───────────────────────────────────────────────────────────────
   const {
-    show,               // per messaggi in #msg
-    updateStatusDot,    // per header dot + testo
+    show,
+    updateStatusDot,
     showNotBooked,
     showInteraction,
     showRegisteredUI,
     resetAlerts
   } = window.ui;
 
-  // ───────────────────────────────────────────────────────────────
-  // SHORTCUT E CONFIG
-  // ───────────────────────────────────────────────────────────────
   const API = "https://lockers-api.cqc2qfkwcw.workers.dev";
   const id  = x => document.getElementById(x);
 
+  // header loader toggles
   function showHeaderLoader() {
     id("loader").hidden     = false;
     id("statusDot").hidden  = true;
@@ -67,16 +63,14 @@ async function getDeviceId() {
     id("statusText").hidden = false;
   }
 
-  // ───────────────────────────────────────────────────────────────
-  // RIFERIMENTI DOM & PARAMETRI
-  // ───────────────────────────────────────────────────────────────
+  // DOM refs
   const url = new URL(location.href);
   const box = url.searchParams.get("box");
   id("titBox").textContent = box || "?";
 
-  const elPin = id("pin"),
-        bReg  = id("btnReg"),
-        bOpen = id("btnOpen"); // gestito dalla modale
+  const elPin = id("pin");
+  const bReg  = id("btnReg");
+  const bOpen = id("btnOpen"); // via modal
 
   bReg.onclick = onRegister;
 
@@ -88,15 +82,14 @@ async function getDeviceId() {
   const deviceId = await getDeviceId();
   init();
 
-  // ───────────────────────────────────────────────────────────────
-  // 1) INIT: controlla stato e aggiorna UI header + body
-  // ───────────────────────────────────────────────────────────────
   async function init() {
     resetAlerts();
-    // rende visibile il contenuto del body
+    // mostra body
     id("content").hidden = false;
 
     showHeaderLoader();
+    show("info", "loading");
+
     let stateResp;
     try {
       const res = await fetch(`${API}/state?box=${box}`);
@@ -104,9 +97,7 @@ async function getDeviceId() {
       if (!res.ok) throw new Error(stateResp.msg || `Errore ${res.status}`);
     } catch (e) {
       hideHeaderLoader();
-      return show("danger",
-        e.message === "Failed to fetch" ? "apiUnreachable" : e.message
-      );
+      return show("danger", e.message === "Failed to fetch" ? "apiUnreachable" : e.message);
     }
 
     hideHeaderLoader();
@@ -117,7 +108,7 @@ async function getDeviceId() {
       return showNotBooked();
     }
 
-    // dry-run per verificare dispositivo già registrato
+    // dry-run
     resetAlerts();
     show("info", "loading");
 
@@ -135,21 +126,18 @@ async function getDeviceId() {
       show("success", "deviceRecognized");
       showRegisteredUI();
     } else {
-      show("info", "enterPin");
+      show("danger", "pinError");
       showInteraction();
     }
   }
 
-  // ───────────────────────────────────────────────────────────────
-  // 2) REGISTER
-  // ───────────────────────────────────────────────────────────────
   async function onRegister() {
     resetAlerts();
     show("info", "loading");
 
     const pin = elPin.value.trim();
     if (!pin) {
-      return alert("Inserisci il PIN");
+      return show("danger", "pinError");
     }
 
     let reg;
@@ -165,15 +153,12 @@ async function getDeviceId() {
     }
 
     if (!reg.ok) {
-      return show("danger", reg.msg || "Errore durante la registrazione");
+      return show("danger", reg.msg === translations.it.pinError ? "pinError" : reg.msg);
     }
     show("success", "deviceRegistered");
     showRegisteredUI();
   }
 
-  // ───────────────────────────────────────────────────────────────
-  // 3) OPEN
-  // ───────────────────────────────────────────────────────────────
   async function onOpen() {
     resetAlerts();
     show("info", "loading");
@@ -189,12 +174,10 @@ async function getDeviceId() {
     }
 
     if (!op.ok) {
-      return show("danger", op.msg || "Errore durante l’apertura");
+      return show("danger", op.msg);
     }
     show("success", "openSuccess");
   }
 
-  // esponi onOpen per il bottone della modale
   window.ui.confirmOpen = onOpen;
-
 })();
