@@ -101,13 +101,11 @@ function showLoader() {
   id("loader").hidden      = false;
   id("statusDot").hidden   = true;
   id("statusText").hidden  = true;
-  id("content").hidden     = true;
 }
 function hideLoader() {
   id("loader").hidden      = true;
   id("statusDot").hidden   = false;
   id("statusText").hidden  = false;
-  id("content").hidden     = false;
 }
 function show(type, keyOrMsg) {
   const el = id("msg");
