@@ -1,5 +1,39 @@
-// app.js
-;(function(){
+// --- IndexedDB helper per deviceId ---
+const DB_NAME = 'locker-app';
+const STORE_NAME = 'meta';
+
+function openDb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(STORE_NAME);
+    req.onsuccess    = () => resolve(req.result);
+    req.onerror      = () => reject(req.error);
+  });
+}
+
+async function getDeviceId() {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const get = store.get('deviceId');
+    get.onsuccess = () => {
+      let id = get.result;
+      if (!id) {
+        // UUIDv4 semplice
+        id = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+        store.put(id, 'deviceId');
+      }
+      resolve(id);
+    };
+    get.onerror = () => reject(get.error);
+  });
+}
+// --- fine IndexedDB helper ---
+
+;(async function(){
   // ───────────────────────────────────────────────────────────────
   // IMPORT UI FUNCTIONS (from ui.js)
   // ───────────────────────────────────────────────────────────────
@@ -29,7 +63,6 @@
 
   const elMsg = id("msg"),
         elPin = id("pin"),
-        grp   = id("pinGrp"),
         bReg  = id("btnReg"),
         bOpen = id("btnOpen");
 
@@ -40,13 +73,14 @@
   bOpen.onclick = onOpen;
 
   // ───────────────────────────────────────────────────────────────
-  // START
+  // START: genera o recupera deviceId
   // ───────────────────────────────────────────────────────────────
   if (!box) {
     show("danger", "Parametro ?box mancante");
-  } else {
-    init();
+    return;
   }
+  const deviceId = await getDeviceId();
+  init();
 
   // ───────────────────────────────────────────────────────────────
   // 1) INIT: STATE → REGISTERED? → INTERACTION UI
@@ -68,7 +102,8 @@
 
     // b) update header dot/text
     updateStatusDot(stateResp.booked);
-window.currentBooked = stateResp.booked;
+    window.currentBooked = stateResp.booked;
+
     // c) not booked?
     if (!stateResp.booked) {
       hideLoader();
@@ -79,7 +114,7 @@ window.currentBooked = stateResp.booked;
     let dry;
     try {
       const resp = await fetch(
-        `${API}/open?box=${box}&device=${encodeURIComponent(navigator.userAgent)}&dry=1`
+        `${API}/open?box=${box}&device=${encodeURIComponent(deviceId)}&dry=1`
       );
       dry = await resp.json();
     } catch (_) {
@@ -101,25 +136,23 @@ window.currentBooked = stateResp.booked;
   // 2) REGISTER
   // ───────────────────────────────────────────────────────────────
   async function onRegister(){
-  // resetto eventuali messaggi precedenti e mostro il caricamento
-  resetAlerts();
-  show("info", "loading");
+    resetAlerts();
+    show("info", "loading");
 
     const pin = elPin.value.trim();
     if (!pin) return alert("Inserisci il PIN");
 
     let reg;
     try {
-      const resp = await fetch(`${API}/register`, {
+      reg = await (await fetch(`${API}/register`, {
         method: "POST",
         headers: { "Content-Type":"application/json" },
         body: JSON.stringify({
           box:+box,
           pincode:pin,
-          device:navigator.userAgent
+          device:deviceId
         })
-      });
-      reg = await resp.json();
+      })).json();
     } catch (_) {
       return show("danger","apiUnreachable");
     }
@@ -135,15 +168,13 @@ window.currentBooked = stateResp.booked;
   // 3) OPEN
   // ───────────────────────────────────────────────────────────────
   async function onOpen(){
-      // mostro caricamento
-  resetAlerts();
-  show("info", "loading");
+    resetAlerts();
+    show("info", "loading");
     let op;
     try {
-      const resp = await fetch(
-        `${API}/open?box=${box}&device=${encodeURIComponent(navigator.userAgent)}`
-      );
-      op = await resp.json();
+      op = await (await fetch(
+        `${API}/open?box=${box}&device=${encodeURIComponent(deviceId)}`
+      )).json();
     } catch (_) {
       return show("danger","apiUnreachable");
     }
