@@ -70,8 +70,8 @@ footer {
   gap: 0.25rem;
 }
 .dots div {
-  width: 0.45rem;
-  height: 0.45rem;
+  width: 0.25rem;
+  height: 0.25rem;
   background: #001f3f;
   border-radius: 50%;
   animation: bounce 0.6s infinite alternate;
@@ -79,7 +79,7 @@ footer {
 .dots div:nth-child(2) { animation-delay: 0.2s; }
 .dots div:nth-child(3) { animation-delay: 0.4s; }
 @keyframes bounce {
-  to { transform: translateY(-0.45rem); opacity: 0.7; }
+  to { transform: translateY(-0.25rem); opacity: 0.7; }
 }
 
 /* hide loader by default; ui.js toggles [hidden] */
