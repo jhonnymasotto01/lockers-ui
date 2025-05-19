@@ -20,7 +20,6 @@ async function getDeviceId() {
     get.onsuccess = () => {
       let id = get.result;
       if (!id) {
-        // UUIDv4 semplice
         id = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
           (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
         );
@@ -63,22 +62,20 @@ async function getDeviceId() {
 
   const elMsg = id("msg"),
         elPin = id("pin"),
+        grp   = id("pinGrp"),       // riferimento gruppo PIN (non più usato direttamente ma mantenuto)
         bReg  = id("btnReg"),
-        bOpen = id("btnOpen");
+        bOpen = id("btnOpen");      // riferimento bottone Apri (handler gestito via modal)
 
-  // ───────────────────────────────────────────────────────────────
-  // BIND EVENTS
-  // ───────────────────────────────────────────────────────────────
-  bReg .onclick = onRegister;
-  //  bOpen.onclick = onOpen;
+  // bind register only; open è gestito dalla modale in ui.js
+  bReg.onclick = onRegister;
 
-  // ───────────────────────────────────────────────────────────────
-  // START: genera o recupera deviceId
-  // ───────────────────────────────────────────────────────────────
+  // START: verifica parametro box
   if (!box) {
     show("danger", "Parametro ?box mancante");
     return;
   }
+
+  // genera o recupera deviceId e avvia INIT
   const deviceId = await getDeviceId();
   init();
 
@@ -89,7 +86,6 @@ async function getDeviceId() {
     resetAlerts();
     showLoader();
 
-    // a) /state
     let stateResp;
     try {
       const res = await fetch(`${API}/state?box=${box}`);
@@ -100,17 +96,15 @@ async function getDeviceId() {
       return show("danger", e.message === "Failed to fetch" ? "apiUnreachable" : e.message);
     }
 
-    // b) update header dot/text
     updateStatusDot(stateResp.booked);
     window.currentBooked = stateResp.booked;
 
-    // c) not booked?
     if (!stateResp.booked) {
       hideLoader();
       return showNotBooked();
     }
 
-    // d) dry-run register?
+    // dry-run per verificare registrazione dispositivo
     let dry;
     try {
       const resp = await fetch(
@@ -119,15 +113,15 @@ async function getDeviceId() {
       dry = await resp.json();
     } catch (_) {
       hideLoader();
-      return show("danger","apiUnreachable");
+      return show("danger", "apiUnreachable");
     }
     hideLoader();
 
     if (dry.ok) {
-      show("success","deviceRecognized");
+      show("success", "deviceRecognized");
       showRegisteredUI();
     } else {
-      show("info","enterPin");
+      show("info", "enterPin");
       showInteraction();
     }
   }
@@ -137,30 +131,32 @@ async function getDeviceId() {
   // ───────────────────────────────────────────────────────────────
   async function onRegister(){
     resetAlerts();
-    show("info", "loading");
+    showLoader();
 
     const pin = elPin.value.trim();
-    if (!pin) return alert("Inserisci il PIN");
+    if (!pin) {
+      hideLoader();
+      return alert("Inserisci il PIN");
+    }
 
     let reg;
     try {
-      reg = await (await fetch(`${API}/register`, {
+      const response = await fetch(`${API}/register`, {
         method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify({
-          box:+box,
-          pincode:pin,
-          device:deviceId
-        })
-      })).json();
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ box: +box, pincode: pin, device: deviceId })
+      });
+      reg = await response.json();
     } catch (_) {
-      return show("danger","apiUnreachable");
+      hideLoader();
+      return show("danger", "apiUnreachable");
     }
+    hideLoader();
 
     if (!reg.ok) {
       return show("danger", reg.msg || "Errore durante la registrazione");
     }
-    show("success", reg.msg);
+    show("success", "deviceRegistered");
     showRegisteredUI();
   }
 
@@ -169,23 +165,26 @@ async function getDeviceId() {
   // ───────────────────────────────────────────────────────────────
   async function onOpen(){
     resetAlerts();
-    show("info", "loading");
+    showLoader();
+
     let op;
     try {
-      op = await (await fetch(
+      const response = await fetch(
         `${API}/open?box=${box}&device=${encodeURIComponent(deviceId)}`
-      )).json();
+      );
+      op = await response.json();
     } catch (_) {
-      return show("danger","apiUnreachable");
+      hideLoader();
+      return show("danger", "apiUnreachable");
     }
+    hideLoader();
 
     if (!op.ok) {
       return show("danger", op.msg || "Errore durante l’apertura");
     }
-    show("success", op.msg);
+    show("success", "openSuccess");
   }
 
-  // esponi onOpen alla modale di conferma
+  // esponi onOpen per il bottone Apri della modale
   window.ui.confirmOpen = onOpen;
-
-})();  // ← end IIFE
+})();
