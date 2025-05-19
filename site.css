@@ -1,4 +1,11 @@
 /* ========== site.css ========== */
+
+/* 1) Assicuro altezza piena per html e body, senza scroll verticale inutile */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
 /* ── riposiziona e ingrandisci le bandiere ───────────────────────────── */
 .lang-switcher {
   display: flex;
@@ -26,7 +33,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  margin: 0;
   font-family: sans-serif;
   background: #d4e4f0;
   color: #333;
@@ -39,7 +45,8 @@ body {
   align-items: center;
   width: 100%;
   max-width: 320px;
-  margin: auto;
+  margin: 0 auto;    /* centri orizzontalmente, nessun margine verticale */
+  padding: 0;        /* rimuovo padding extra */
 }
 
 /* header & footer share background & full width */
@@ -82,10 +89,10 @@ footer {
   to { transform: translateY(-0.25rem); opacity: 0.7; }
 }
 
-/* hide loader by default; ui.js toggles [hidden] */
+/* nasconde loader header di default; ui.js regola l'attributo hidden */
 #loader[hidden] { display: none; }
 
-/* after loading, we show these */
+/* dopo loading, mostra .status-info */
 .status-info {
   display: flex;
   align-items: center;
@@ -108,7 +115,7 @@ main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
+  padding: 0.5rem;   /* meno spazio verticale per evitare scroll */
 }
 #content[hidden] { display: none; }
 
@@ -147,16 +154,19 @@ main {
 }
 
 /* ── ALERT MESSAGES ─────────────────────────────────────────────── */
-.alert {
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  margin-bottom: 1rem;
-  outline: none;
-}
+/* regole generali per .alert (colori) */
 .alert-danger  { background: #f8d7da; color: #721c24; }
 .alert-warning { background: #fff3cd; color: #856404; }
 .alert-info    { background: #d1ecf1; color: #0c5460; }
 .alert-success { background: #d4edda; color: #155724; }
+
+/* override solo per il messaggio in #msg: nessun pill-shape, nessun background */
+#msg.alert {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0.5rem 0 !important; /* un po’ di spazio verticale */
+  color: inherit !important;
+}
 
 /* ── INFO TEXT ─────────────────────────────────────────────────── */
 #infoText {
@@ -167,17 +177,10 @@ main {
   max-width: 300px;
   width: 100%;
 }
+/* avviso incognito, visibile solo in showInteraction/showRegisteredUI */
 #incognitoWarning {
   margin-top: 0;
   text-align: center;
-}
-
-/* 1) Messaggi (#msg): testo centrato, senza background */
-#msg {
-  background: transparent;
-  text-align: center;
-  padding: 0.5rem 0;
-  color: inherit;
 }
 
 /* 2) Titolo responsive su smartphone */
