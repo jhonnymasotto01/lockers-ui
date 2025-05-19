@@ -107,11 +107,11 @@ setLang(lang);
 function showLoaderInMsg() {
   const el = id("msg");
   el.className = "alert alert-info rounded-pill text-center";
-  el.innerHTML = 
+  el.innerHTML = `
     <div class="dots">
       <div></div><div></div><div></div>
     </div>
-  ;
+  `;
   el.hidden = false;
 }
 
@@ -136,7 +136,7 @@ function show(type, keyOrMsg) {
     el.removeAttribute("data-i18n");
     el.textContent = keyOrMsg;
   }
-  el.className = alert alert-${type} rounded-pill text-center;
+  el.className = `alert alert-${type} rounded-pill text-center`;
   el.hidden    = false;
 }
 
