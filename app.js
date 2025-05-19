@@ -185,4 +185,7 @@ async function getDeviceId() {
     show("success", op.msg);
   }
 
+  // esponi onOpen alla modale di conferma
+  window.ui.confirmOpen = onOpen;
+
 })();  // ← end IIFE
