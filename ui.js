@@ -21,7 +21,8 @@ const translations = {
     apiUnreachable:   "API non raggiungibile",
     deviceRecognized: "Dispositivo riconosciuto",
     enterPin:         "Inserisci il PIN della prenotazione",
-    loading:          "loading",             // usato come chiave per il loader a puntini
+    pinError:         "PIN errato o scaduto",
+    loading:          "loading",
     deviceRegistered: "Dispositivo registrato",
     openSuccess:      "Azione completata",
     incognitoWarn:    "Non usare modalità incognito",
@@ -43,6 +44,7 @@ const translations = {
     apiUnreachable:   "API unreachable",
     deviceRecognized: "Device recognized",
     enterPin:         "Enter booking PIN",
+    pinError:         "PIN incorrect or expired",
     loading:          "loading",
     deviceRegistered: "Device registered",
     openSuccess:      "Action completed",
@@ -140,6 +142,12 @@ function show(type, keyOrMsg) {
   el.hidden    = false;
 }
 
+// ─── mostra loader batteria in body ──────────────────────────────────
+// chiamabile da app.js come window.ui.showBodyLoader()
+function showBodyLoader() {
+  show("info", "loading");
+}
+
 // ─── stato header ───────────────────────────────────────────────────
 function updateStatusDot(booked) {
   const dot = id("statusDot");
@@ -199,5 +207,6 @@ window.ui = {
   showInteraction,
   showRegisteredUI,
   resetAlerts,
-  confirmOpen: () => {}
+  confirmOpen: () => {},
+  showBodyLoader
 };
