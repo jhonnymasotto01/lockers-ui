@@ -6,6 +6,9 @@ function id(x) { return document.getElementById(x); }
 // ─── inietto subito il numero armadietto in header ─────────────────
 id("titBox").textContent = new URL(location.href).searchParams.get("box") || "?";
 
+// ─── nascondo di default l’avviso incognito ─────────────────────────
+id("incognitoWarning").hidden = true;
+
 // ─── traduzioni ─────────────────────────────────────────────────────
 const translations = {
   it: {
@@ -84,7 +87,7 @@ function setLang(l) {
   id("confirmOpenBtn").textContent = translations[l].confirmBtn;
   id("confirmOpenModal").querySelector(".btn-secondary").textContent = translations[l].cancelBtn;
 
-  // avviso incognito (sempre visibile)
+  // aggiorna testo incognito (ma non la visibilità)
   id("incognitoWarning").textContent = translations[l].incognitoWarn;
 
   // eventuale messaggio già mostrato (eccetto loading)
@@ -142,12 +145,6 @@ function show(type, keyOrMsg) {
   el.hidden    = false;
 }
 
-// ─── mostra loader batteria in body ──────────────────────────────────
-// chiamabile da app.js come window.ui.showBodyLoader()
-function showBodyLoader() {
-  show("info", "loading");
-}
-
 // ─── stato header ───────────────────────────────────────────────────
 function updateStatusDot(booked) {
   const dot = id("statusDot");
@@ -160,23 +157,29 @@ function updateStatusDot(booked) {
 
 // ─── interazione UI ─────────────────────────────────────────────────
 function showNotBooked() {
-  id("notBookedMessage").hidden = false;
-  id("pinGrp").hidden           = true;
-  id("btnOpen").hidden          = true;
-  id("infoText").hidden         = true;
+  id("notBookedMessage").hidden  = false;
+  id("pinGrp").hidden            = true;
+  id("btnOpen").hidden           = true;
+  id("infoText").hidden          = true;
+  id("incognitoWarning").hidden  = true;
 }
+
 function showInteraction() {
-  id("notBookedMessage").hidden = true;
-  id("pinGrp").hidden           = false;
-  id("btnOpen").hidden          = true;
-  id("infoText").hidden         = false;
+  id("notBookedMessage").hidden  = true;
+  id("pinGrp").hidden            = false;
+  id("btnOpen").hidden           = true;
+  id("infoText").hidden          = false;
+  id("incognitoWarning").hidden  = false;
 }
+
 function showRegisteredUI() {
-  id("notBookedMessage").hidden = true;
-  id("pinGrp").hidden           = true;
-  id("btnOpen").hidden          = false;
-  id("infoText").hidden         = false;
+  id("notBookedMessage").hidden  = true;
+  id("pinGrp").hidden            = true;
+  id("btnOpen").hidden           = false;
+  id("infoText").hidden          = false;
+  id("incognitoWarning").hidden  = false;
 }
+
 function resetAlerts() {
   hideLoaderInMsg();
 }
@@ -208,5 +211,5 @@ window.ui = {
   showRegisteredUI,
   resetAlerts,
   confirmOpen: () => {},
-  showBodyLoader
+  showBodyLoader: () => show("info","loading")
 };
