@@ -1,6 +1,9 @@
 // ui.js
 
-// ─── helper per selezionare elementi ────────────────────────────────
+       "Locker App",
+    boxLabel:           "Armadietto",
+    statusBooked:       "Prenotato",
+    statusNotBooked:// ─── helper per selezionare elementi ────────────────────────────────
 function id(x) { return document.getElementById(x); }
 
 // ─── inietto subito il numero armadietto in header ─────────────────
@@ -9,42 +12,47 @@ id("titBox").textContent = new URL(location.href).searchParams.get("box") || "?"
 // ─── traduzioni ─────────────────────────────────────────────────────
 const translations = {
   it: {
-    appTitle:         "Locker App",
-    boxLabel:         "Armadietto",
-    statusBooked:     "Prenotato",
-    statusNotBooked:  "Non prenotato",
-    notBooked:        "Prenota ora il tuo armadietto, segui le linee guida riportate sul totem per l'acquisto e la prenotazione",
-    pinPlaceholder:   "Inserisci PIN",
-    registerBtn:      "Registra ora",
-    openBtn:          "Apri ora",
-    infoText:         "La registrazione avviene sul dispositivo attualmente connesso e quindi solo con tale dispositivo si potrà aprire.",
-    apiUnreachable:   "API non raggiungibile",
-    deviceRecognized: "Dispositivo riconosciuto",
-    enterPin:         "Inserisci il PIN della prenotazione",
+    appTitle:        "Non prenotato",
+    notBooked:          "Prenota ora il tuo armadietto, segui le linee guida riportate sul totem per l'acquisto e la prenotazione",
+    pinPlaceholder:     "Inserisci PIN",
+    registerBtn:        "Registra ora",
+    openBtn:            "Apri ora",
+    infoText:           "La registrazione avviene sul dispositivo attualmente connesso e quindi solo con tale dispositivo si potrà aprire.",
+    apiUnreachable:     "API non raggiungibile",
+    deviceRecognized:   "Dispositivo riconosciuto",
+    loading:            "Caricamento in corso…",
+    deviceRegistered:   "Dispositivo registrato",
+    openSuccess:        "Azione completata",
+    enterPin:           "Inserisci il PIN della prenotazione",
+    incognitoWarn:      "Non usare modalità incognito",
     // modale conferma apertura
-    openConfirmTitle: "Conferma apertura",
-    openConfirmBody:  "Sei sicuro di voler aprire l’armadietto adesso?",
-    confirmBtn:       "Apri",
-    cancelBtn:        "Annulla"
+    openConfirmTitle:   "Conferma apertura",
+    openConfirmBody:    "Sei sicuro di voler aprire l’armadietto adesso?",
+    confirmBtn:         "Apri",
+    cancelBtn:          "Annulla"
   },
   en: {
-    appTitle:         "Locker App",
-    boxLabel:         "Locker",
-    statusBooked:     "Booked",
-    statusNotBooked:  "Not booked",
-    notBooked:        "Reserve now your locker – follow the guidelines on the kiosk for purchase and booking",
-    pinPlaceholder:   "Enter PIN",
-    registerBtn:      "Register now",
-    openBtn:          "Open now",
-    infoText:         "Registration occurs on the currently connected device, so only that device can open it.",
-    apiUnreachable:   "API unreachable",
-    deviceRecognized: "Device recognized",
-    enterPin:         "Enter the booking PIN",
+    appTitle:           "Locker App",
+    boxLabel:           "Locker",
+    statusBooked:       "Booked",
+    statusNotBooked:    "Not booked",
+    notBooked:          "Reserve now your locker – follow the guidelines on the kiosk for purchase and booking",
+    pinPlaceholder:     "Enter PIN",
+    registerBtn:        "Register now",
+    openBtn:            "Open now",
+    infoText:           "Registration occurs on the currently connected device, so only that device can open it.",
+    apiUnreachable:     "API unreachable",
+    deviceRecognized:   "Device recognized",
+    loading:            "Loading…",
+    deviceRegistered:   "Device registered",
+    openSuccess:        "Action completed",
+    enterPin:           "Enter booking PIN",
+    incognitoWarn:      "Do not use incognito mode",
     // modal confirmation
-    openConfirmTitle: "Confirm open",
-    openConfirmBody:  "Are you sure you want to open the locker now?",
-    confirmBtn:       "Open",
-    cancelBtn:        "Cancel"
+    openConfirmTitle:   "Confirm open",
+    openConfirmBody:    "Are you sure you want to open the locker now?",
+    confirmBtn:         "Open",
+    cancelBtn:          "Cancel"
   }
 };
 
@@ -181,6 +189,5 @@ window.ui = {
   showInteraction,
   showRegisteredUI,
   resetAlerts,
-  // placeholder, sovrascritto in app.js
   confirmOpen: () => {}
 };
