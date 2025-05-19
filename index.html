@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Locker App</title>
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Site styles -->
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
@@ -12,28 +14,27 @@
   <header>
     <h1 id="appTitle" data-i18n="appTitle">Locker App</h1>
     <div class="status">
-      <!-- Box label + number -->
       <strong>
         <span data-i18n="boxLabel">Armadietto</span>
         <span id="titBox">?</span>
       </strong>
-
-      <!-- Spinner sits here in the header under the number -->
-      <div id="loader"></div>
-
-      <!-- Once loaded, we show the dot + text -->
+      <!-- Bouncing Dots loader -->
+      <div id="loader" class="dots" hidden>
+        <div></div><div></div><div></div>
+      </div>
       <div class="status-info">
         <span class="status-dot" id="statusDot" hidden></span>
         <span class="status-text" id="statusText" hidden>…</span>
       </div>
     </div>
   </header>
-    <div class="lang-switcher">
-      <button id="lang-it">🇮🇹</button>
-      <button id="lang-en">🇬🇧</button>
-    </div>
+
+  <div class="lang-switcher">
+    <button id="lang-it">🇮🇹</button>
+    <button id="lang-en">🇬🇧</button>
+  </div>
+
   <main>
-    <!-- everything you interact with lives here -->
     <div id="content" hidden>
       <div id="msg" class="alert" hidden></div>
 
@@ -56,13 +57,20 @@
       <p id="infoText" hidden data-i18n="infoText">
         La registrazione avviene sul dispositivo attualmente connesso e quindi solo con tale dispositivo si potrà aprire.
       </p>
+
+      <!-- Sempre visibile: avviso incognito -->
+      <p id="incognitoWarning" class="text-danger" data-i18n="incognitoWarn">
+        Non usare modalità incognito
+      </p>
     </div>
   </main>
 
   <footer>
     &copy; CanevaWorld® 2025
   </footer>
-    <div class="modal fade" id="confirmOpenModal" tabindex="-1" aria-labelledby="confirmOpenLabel" aria-hidden="true">
+
+  <!-- Modale di conferma apertura -->
+  <div class="modal fade" id="confirmOpenModal" tabindex="-1" aria-labelledby="confirmOpenLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -73,14 +81,18 @@
           Sei sicuro di voler aprire l’armadietto adesso?
         </div>
         <div class="modal-footer">
+          <!-- Annulla a sinistra -->
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="cancelBtn">Annulla</button>
+          <!-- Apri a destra -->
           <button type="button" class="btn btn-primary" id="confirmOpenBtn" data-i18n="confirmBtn">Apri</button>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Prima Bootstrap JS, poi i tuoi script -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="ui.js"></script>
   <script src="app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
