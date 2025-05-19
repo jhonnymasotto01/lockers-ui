@@ -1,189 +1,189 @@
 /* ========== site.css ========== */
 /* ── riposiziona e ingrandisci le bandiere ───────────────────────────── */
 .lang-switcher {
-  display: flex;
-  justify-content: center;    /* centro orizzontalmente */
-  gap: 1rem;                   /* aumentiamo lo spazio fra le bandiere */
-  margin: 1.5rem 0;            /* più spazio sopra/sotto */
-  width: 100%;                 /* prendi tutta la larghezza disponibile */
+  display: flex !important;
+  justify-content: center !important;    /* centro orizzontalmente */
+  gap: 1rem !important;                   /* aumentiamo lo spazio fra le bandiere */
+  margin: 1.5rem 0 !important;            /* più spazio sopra/sotto */
+  width: 100% !important;                 /* prendi tutta la larghezza disponibile */
 }
 
 .lang-switcher button {
-  background: none;
-  border: none;
-  font-size: 3rem;             /* ancora più grandi! */
-  line-height: 1;
-  cursor: pointer;
-  opacity: 0.5;
-  transition: opacity .2s;
+  background: none !important;
+  border: none !important;
+  font-size: 3rem !important;             /* ancora più grandi! */
+  line-height: 1 !important;
+  cursor: pointer !important;
+  opacity: 0.5 !important;
+  transition: opacity .2s !important;
 }
 
 .lang-switcher button.selected,
 .lang-switcher button:hover {
-  opacity: 1;
+  opacity: 1 !important;
 }
 /* make body a column flex so footer sticks bottom */
 body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  margin: 0;
-  font-family: sans-serif;
-  background: #d4e4f0;
-  color: #333;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100vh !important;
+  margin: 0 !important;
+  font-family: sans-serif !important;
+  background: #d4e4f0 !important;
+  color: #333 !important;
 }
 
 /* ─── WRAPPER DEL CONTENUTO ───────────────────────────────────────────── */
 #content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 320px;           /* vincolo larghezza per non allungare troppo */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 320px !important;           /* vincolo larghezza per non allungare troppo */
 }
 
 /* header & footer share background & full width */
 header, footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 1rem;
-  background: #d4e4f0;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0.5rem 1rem !important;
+  background: #d4e4f0 !important;
 }
 
 /* center footer text */
 footer {
-  font-size: 0.85rem;
-  justify-content: center;
-  margin-top: auto;
+  font-size: 0.85rem !important;
+  justify-content: center !important;
+  margin-top: auto !important;
 }
 
 /* ── HEADER STATUS COLUMN ───────────────────────────────── */
 .status {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
 }
 
 /* loader spinner in header */
 #loader {
-  width: 2rem;
-  height: 2rem;
-  border: 0.3rem solid #ccc;
-  border-top-color: #001f3f;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  width: 2rem !important;
+  height: 2rem !important;
+  border: 0.3rem solid #ccc !important;
+  border-top-color: #001f3f !important;
+  border-radius: 50% !important;
+  animation: spin 1s linear infinite !important;
 }
 
 /* hide loader by default; ui.js will toggle the hidden attribute */
 #loader[hidden] {
-  display: none;
+  display: none !important;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to { transform: rotate(360deg) !important; }
 }
 
 /* after loading, we show these */
 .status-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
 }
 
 .status-dot {
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 50%;
-  display: inline-block;
+  width: 0.75rem !important;
+  height: 0.75rem !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
 }
 
 .status-text {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 /* ── MAIN CONTENT AREA ─────────────────────────────────────────── */
 main {
-  flex: 1;  /* push footer to bottom */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;    /* centro verticale */
-  align-items: center;        /* centro orizzontale */
-  padding: 1rem;
+  flex: 1 !important;  /* push footer to bottom */
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;    /* centro verticale */
+  align-items: center !important;        /* centro orizzontale */
+  padding: 1rem !important;
 }
 
 #content[hidden] {
-  display: none;
+  display: none !important;
 }
 
 /* central message when not booked */
 #notBookedMessage {
-  text-align: center;
-  margin: 2rem 0;
-  font-size: 1rem;
+  text-align: center !important;
+  margin: 2rem 0 !important;
+  font-size: 1rem !important;
 }
 
 /* ── FORM & BUTTONS ────────────────────────────────────────────── */
 #pin {
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border-radius: 1rem;
-  border: 1px solid #ccc;
-  margin-bottom: 1rem;
+  width: 100% !important;
+  padding: 0.5rem !important;
+  font-size: 1rem !important;
+  border-radius: 1rem !important;
+  border: 1px solid #ccc !important;
+  margin-bottom: 1rem !important;
 }
 
 #btnReg,
 #btnOpen {
-  width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
-  border: none;
-  background: #001f3f;
-  color: #fff;
-  border-radius: 1rem;
-  cursor: pointer;
-  margin-bottom: 1rem;
-  transition: opacity .2s ease;
+  width: 100% !important;
+  padding: 0.75rem !important;
+  font-size: 1rem !important;
+  border: none !important;
+  background: #001f3f !important;
+  color: #fff !important;
+  border-radius: 1rem !important;
+  cursor: pointer !important;
+  margin-bottom: 1rem !important;
+  transition: opacity .2s ease !important;
 }
 
 #btnReg:hover,
 #btnOpen:hover {
-  opacity: 0.9;
+  opacity: 0.9 !important;
 }
 
 /* ── ALERT MESSAGES ─────────────────────────────────────────────── */
 .alert {
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  margin-bottom: 1rem;
+  padding: 0.75rem 1rem !important;
+  border-radius: 1rem !important;
+  margin-bottom: 1rem !important;
 }
 
-.alert-danger  { background: #f8d7da; color: #721c24; }
-.alert-warning { background: #fff3cd; color: #856404; }
-.alert-info    { background: #d1ecf1; color: #0c5460; }
-.alert-success { background: #d4edda; color: #155724; }
+.alert-danger  { background: #f8d7da !important; color: #721c24 !important; } 
+.alert-warning { background: #fff3cd !important; color: #856404 !important; }
+.alert-info    { background: #d1ecf1 !important; color: #0c5460 !important; }
+.alert-success { background: #d4edda !important; color: #155724 !important; }
 
 /* ── INFO TEXT ─────────────────────────────────────────────────── */
 #infoText {
-  font-size: 0.9rem;
-  color: #333;
-  margin-top: 0.5rem;
+  font-size: 0.9rem !important;
+  color: #333 !important;
+  margin-top: 0.5rem !important;
 }
 
 /* 1) Messaggi (#msg): testo centrato e nessun background */
 #msg {
   background: transparent !important;
-  text-align: center;
-  padding: 0.5rem 0;      /* se vuoi mantenere un po' di spazio */
-  color: inherit;         /* usa il colore di default del testo */
+  text-align: center !important;
+  padding: 0.5rem 0 !important;      /* se vuoi mantenere un po' di spazio */
+  color: inherit !important;         /* usa il colore di default del testo */
 }
 
 /* 2) Titolo responsive su smartphone */
 @media (max-width: 576px) {
   header h1 {
-    font-size: 1.5rem;      /* riduci la dimensione su dispositivi piccoli */
+    font-size: 1.5rem !important;      /* riduci la dimensione su dispositivi piccoli */
   }
 }
 
@@ -191,9 +191,8 @@ main {
 #pin,
 #btnReg,
 #btnOpen {
-  max-width: 300px;       /* o quello che ti sembra più comodo */
-  width: 100%;            /* si ridimensionano fino al max-width */
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 300px !important;       /* o quello che ti sembra più comodo */
+  width: 100% !important;            /* si ridimensionano fino al max-width */
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
-
