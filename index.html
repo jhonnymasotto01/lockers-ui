@@ -58,8 +58,8 @@
         La registrazione avviene sul dispositivo attualmente connesso e quindi solo con tale dispositivo si potrà aprire.
       </p>
 
-      <!-- Sempre visibile: avviso incognito -->
-      <p id="incognitoWarning" class="text-danger" data-i18n="incognitoWarn">
+      <!-- Avviso incognito: nascosto di default, verrà mostrato da JS insieme a #infoText -->
+      <p id="incognitoWarning" hidden class="text-danger" data-i18n="incognitoWarn">
         Non usare modalità incognito
       </p>
     </div>
@@ -81,9 +81,7 @@
           Sei sicuro di voler aprire l’armadietto adesso?
         </div>
         <div class="modal-footer">
-          <!-- Annulla a sinistra -->
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="cancelBtn">Annulla</button>
-          <!-- Apri a destra -->
           <button type="button" class="btn btn-primary" id="confirmOpenBtn" data-i18n="confirmBtn">Apri</button>
         </div>
       </div>
