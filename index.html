@@ -56,6 +56,23 @@
         La registrazione avviene sul dispositivo attualmente connesso e quindi solo con tale dispositivo si potrà aprire.
       </p>
     </div>
+    <div class="modal fade" id="confirmOpenModal" tabindex="-1" aria-labelledby="confirmOpenLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmOpenLabel" data-i18n="openConfirmTitle">Conferma apertura</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+        </div>
+        <div class="modal-body" data-i18n="openConfirmBody">
+          Sei sicuro di voler aprire l’armadietto adesso?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="cancelBtn">Annulla</button>
+          <button type="button" class="btn btn-primary" id="confirmOpenBtn" data-i18n="confirmBtn">Apri</button>
+        </div>
+      </div>
+    </div>
+  </div>
   </main>
 
   <footer>
