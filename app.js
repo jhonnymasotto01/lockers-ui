@@ -155,7 +155,7 @@ async function getDeviceId() {
 
     const pin = elPin.value.trim();
     if (!pin) {
-      return alert("Inserisci il PIN");
+      return alert(translations[lang].enterPin);
     }
 
     let reg;
@@ -171,12 +171,13 @@ async function getDeviceId() {
     }
 
     // traduzione per PIN errato o scaduto
-    if (!reg.ok) {
-      if (reg.msg === 'PIN errato o scaduto') {
-        return show("danger", "enterPin");
-      }
-      return show("danger", reg.msg);
-    }
+   if (!reg.ok) {
+     // se il PIN è sbagliato o scaduto, usa la nuova chiave pinError
+     if (reg.msg === 'PIN errato o scaduto') {
+       return show("danger", "pinError");
+     }
+     return show("danger", reg.msg);
+   }
 
     show("success", "deviceRegistered");
     showRegisteredUI();
