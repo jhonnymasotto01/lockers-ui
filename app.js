@@ -1,3 +1,5 @@
+// app.js
+
 // --- IndexedDB helper per deviceId ---
 const DB_NAME = 'locker-app';
 const STORE_NAME = 'meta';
@@ -20,6 +22,7 @@ async function getDeviceId() {
     get.onsuccess = () => {
       let id = get.result;
       if (!id) {
+        // UUIDv4 semplice
         id = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
           (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
         );
@@ -39,8 +42,6 @@ async function getDeviceId() {
   const {
     show,
     updateStatusDot,
-    showLoader,
-    hideLoader,
     showNotBooked,
     showInteraction,
     showRegisteredUI,
@@ -62,9 +63,9 @@ async function getDeviceId() {
 
   const elMsg = id("msg"),
         elPin = id("pin"),
-        grp   = id("pinGrp"),       // riferimento gruppo PIN (non più usato direttamente ma mantenuto)
+        grp   = id("pinGrp"),
         bReg  = id("btnReg"),
-        bOpen = id("btnOpen");      // riferimento bottone Apri (handler gestito via modal)
+        bOpen = id("btnOpen");
 
   // bind register only; open è gestito dalla modale in ui.js
   bReg.onclick = onRegister;
@@ -84,7 +85,7 @@ async function getDeviceId() {
   // ───────────────────────────────────────────────────────────────
   async function init(){
     resetAlerts();
-    showLoader();
+    show("info", "loading");
 
     let stateResp;
     try {
@@ -92,7 +93,6 @@ async function getDeviceId() {
       stateResp = await res.json();
       if (!res.ok) throw new Error(stateResp.msg || `Errore ${res.status}`);
     } catch (e) {
-      hideLoader();
       return show("danger", e.message === "Failed to fetch" ? "apiUnreachable" : e.message);
     }
 
@@ -100,11 +100,13 @@ async function getDeviceId() {
     window.currentBooked = stateResp.booked;
 
     if (!stateResp.booked) {
-      hideLoader();
       return showNotBooked();
     }
 
     // dry-run per verificare registrazione dispositivo
+    resetAlerts();
+    show("info", "loading");
+
     let dry;
     try {
       const resp = await fetch(
@@ -112,10 +114,8 @@ async function getDeviceId() {
       );
       dry = await resp.json();
     } catch (_) {
-      hideLoader();
       return show("danger", "apiUnreachable");
     }
-    hideLoader();
 
     if (dry.ok) {
       show("success", "deviceRecognized");
@@ -131,11 +131,10 @@ async function getDeviceId() {
   // ───────────────────────────────────────────────────────────────
   async function onRegister(){
     resetAlerts();
-    showLoader();
+    show("info", "loading");
 
     const pin = elPin.value.trim();
     if (!pin) {
-      hideLoader();
       return alert("Inserisci il PIN");
     }
 
@@ -148,10 +147,8 @@ async function getDeviceId() {
       });
       reg = await response.json();
     } catch (_) {
-      hideLoader();
       return show("danger", "apiUnreachable");
     }
-    hideLoader();
 
     if (!reg.ok) {
       return show("danger", reg.msg || "Errore durante la registrazione");
@@ -165,7 +162,7 @@ async function getDeviceId() {
   // ───────────────────────────────────────────────────────────────
   async function onOpen(){
     resetAlerts();
-    showLoader();
+    show("info", "loading");
 
     let op;
     try {
@@ -174,10 +171,8 @@ async function getDeviceId() {
       );
       op = await response.json();
     } catch (_) {
-      hideLoader();
       return show("danger", "apiUnreachable");
     }
-    hideLoader();
 
     if (!op.ok) {
       return show("danger", op.msg || "Errore durante l’apertura");
