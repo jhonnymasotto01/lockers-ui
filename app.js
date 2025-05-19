@@ -42,7 +42,7 @@ async function getDeviceId() {
   // IMPORT UI FUNCTIONS (from ui.js)
   // ───────────────────────────────────────────────────────────────
   const {
-    show,               // per messaggi in #msg
+    show,               // per messaggi in #msg (inclusi dots)
     updateStatusDot,    // per header dot + testo
     showNotBooked,
     showInteraction,
@@ -78,6 +78,7 @@ async function getDeviceId() {
         bReg  = id("btnReg"),
         bOpen = id("btnOpen"); // gestito dalla modale
 
+  // bind register; open via modal invoca window.ui.confirmOpen()
   bReg.onclick = onRegister;
 
   if (!box) {
@@ -85,6 +86,7 @@ async function getDeviceId() {
     return;
   }
 
+  // recupera deviceId e avvia init
   const deviceId = await getDeviceId();
   init();
 
@@ -93,10 +95,13 @@ async function getDeviceId() {
   // ───────────────────────────────────────────────────────────────
   async function init() {
     resetAlerts();
-    // rende visibile il contenuto del body
+    // mostra subito il contenuto (era nascosto)
     id("content").hidden = false;
-
+    // dots nel body
+    show("info", "loading");
+    // dots in header
     showHeaderLoader();
+
     let stateResp;
     try {
       const res = await fetch(`${API}/state?box=${box}`);
@@ -109,18 +114,19 @@ async function getDeviceId() {
       );
     }
 
+    // prima di aggiornare header, rimuovo dots negli alert
     hideHeaderLoader();
     updateStatusDot(stateResp.booked);
     window.currentBooked = stateResp.booked;
+    // rimuovo dots dal body
+    resetAlerts();
 
     if (!stateResp.booked) {
       return showNotBooked();
     }
 
-    // dry-run per verificare dispositivo già registrato
-    resetAlerts();
+    // dry-run per vedere se già registrato
     show("info", "loading");
-
     let dry;
     try {
       const resp = await fetch(
@@ -164,9 +170,14 @@ async function getDeviceId() {
       return show("danger", "apiUnreachable");
     }
 
+    // traduzione per PIN errato o scaduto
     if (!reg.ok) {
-      return show("danger", reg.msg || "Errore durante la registrazione");
+      if (reg.msg === 'PIN errato o scaduto') {
+        return show("danger", "enterPin");
+      }
+      return show("danger", reg.msg);
     }
+
     show("success", "deviceRegistered");
     showRegisteredUI();
   }
@@ -189,7 +200,7 @@ async function getDeviceId() {
     }
 
     if (!op.ok) {
-      return show("danger", op.msg || "Errore durante l’apertura");
+      return show("danger", op.msg);
     }
     show("success", "openSuccess");
   }
