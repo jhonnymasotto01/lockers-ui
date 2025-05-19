@@ -70,7 +70,7 @@ async function getDeviceId() {
   // BIND EVENTS
   // ───────────────────────────────────────────────────────────────
   bReg .onclick = onRegister;
-  bOpen.onclick = onOpen;
+  //  bOpen.onclick = onOpen;
 
   // ───────────────────────────────────────────────────────────────
   // START: genera o recupera deviceId
