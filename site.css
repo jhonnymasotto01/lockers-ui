@@ -70,8 +70,8 @@ footer {
   gap: 0.25rem;
 }
 .dots div {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 0.55rem;
+  height: 0.55rem;
   background: #001f3f;
   border-radius: 50%;
   animation: bounce 0.6s infinite alternate;
