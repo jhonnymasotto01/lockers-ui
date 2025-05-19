@@ -16,15 +16,18 @@ function openDb() {
 async function getDeviceId() {
   const db = await openDb();
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const tx    = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
-    const get = store.get('deviceId');
+    const get   = store.get('deviceId');
     get.onsuccess = () => {
       let id = get.result;
       if (!id) {
-        id = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c/4).toString(16)
-        );
+        // Genera semplice UUIDv4
+        id = ([1e7]+-1e3+-4e3+-8e3+-1e11)
+          .replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c/4)
+              .toString(16)
+          );
         store.put(id, 'deviceId');
       }
       resolve(id);
@@ -39,7 +42,7 @@ async function getDeviceId() {
   // IMPORT UI FUNCTIONS (from ui.js)
   // ───────────────────────────────────────────────────────────────
   const {
-    show,               // per messaggi nel #msg
+    show,               // per messaggi in #msg
     updateStatusDot,    // per header dot + testo
     showNotBooked,
     showInteraction,
@@ -48,24 +51,24 @@ async function getDeviceId() {
   } = window.ui;
 
   // ───────────────────────────────────────────────────────────────
-  // CONFIG & HELPERS
+  // SHORTCUT E CONFIG
   // ───────────────────────────────────────────────────────────────
   const API = "https://lockers-api.cqc2qfkwcw.workers.dev";
   const id  = x => document.getElementById(x);
 
   function showHeaderLoader() {
-    id("loader").hidden = false;
-    id("statusDot").hidden = true;
+    id("loader").hidden     = false;
+    id("statusDot").hidden  = true;
     id("statusText").hidden = true;
   }
   function hideHeaderLoader() {
-    id("loader").hidden = true;
-    id("statusDot").hidden = false;
+    id("loader").hidden     = true;
+    id("statusDot").hidden  = false;
     id("statusText").hidden = false;
   }
 
   // ───────────────────────────────────────────────────────────────
-  // DOM REFS & PARAMS
+  // RIFERIMENTI DOM & PARAMETRI
   // ───────────────────────────────────────────────────────────────
   const url = new URL(location.href);
   const box = url.searchParams.get("box");
@@ -73,8 +76,7 @@ async function getDeviceId() {
 
   const elPin = id("pin"),
         bReg  = id("btnReg"),
-        // #btnOpen è lanciato dalla modale
-        bOpen = id("btnOpen");
+        bOpen = id("btnOpen"); // gestito dalla modale
 
   bReg.onclick = onRegister;
 
@@ -87,12 +89,14 @@ async function getDeviceId() {
   init();
 
   // ───────────────────────────────────────────────────────────────
-  // 1) INIT: controllo stato → UI header + UI content
+  // 1) INIT: controlla stato e aggiorna UI header + body
   // ───────────────────────────────────────────────────────────────
   async function init() {
     resetAlerts();
-    showHeaderLoader();
+    // rende visibile il contenuto del body
+    id("content").hidden = false;
 
+    showHeaderLoader();
     let stateResp;
     try {
       const res = await fetch(`${API}/state?box=${box}`);
@@ -100,7 +104,9 @@ async function getDeviceId() {
       if (!res.ok) throw new Error(stateResp.msg || `Errore ${res.status}`);
     } catch (e) {
       hideHeaderLoader();
-      return show("danger", e.message === "Failed to fetch" ? "apiUnreachable" : e.message);
+      return show("danger",
+        e.message === "Failed to fetch" ? "apiUnreachable" : e.message
+      );
     }
 
     hideHeaderLoader();
@@ -111,7 +117,7 @@ async function getDeviceId() {
       return showNotBooked();
     }
 
-    // dry-run per vedere se già registrato
+    // dry-run per verificare dispositivo già registrato
     resetAlerts();
     show("info", "loading");
 
