@@ -49,6 +49,8 @@ body {
   padding: 0;        /* rimuovo padding extra */
 }
 
+
+
 /* header & footer share background & full width */
 header, footer {
   display: flex;
@@ -63,6 +65,11 @@ footer {
   margin-top: auto;
 }
 
+
+.navbar {
+
+  background: black;
+}
 /* ── HEADER STATUS COLUMN ───────────────────────────────── */
 .status {
   display: flex;
