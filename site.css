@@ -66,10 +66,7 @@ footer {
 }
 
 
-.navbar {
 
-  background: black;
-}
 /* ── HEADER STATUS COLUMN ───────────────────────────────── */
 .status {
   display: flex;
